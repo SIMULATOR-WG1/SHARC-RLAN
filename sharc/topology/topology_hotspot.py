@@ -225,7 +225,7 @@ class TopologyHotspot(Topology):
 if __name__ == '__main__':
     param = ParametersHotspot()
     #param.num_hotspots_per_cell = 2
-    param.num_hotspots_per_cell = 1
+    param.num_hotspots_per_cell = 2
 
     param.max_dist_hotspot_ue = 60
     param.min_dist_hotspot_ue = 5
