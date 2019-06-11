@@ -17,14 +17,14 @@ class TopologyFactory(object):
     
     @staticmethod
     def createTopology(parameters: Parameters) -> Topology:
-        if parameters.imt.topology == "SINGLE_BS":
-            return TopologySingleBaseStation(parameters.imt.intersite_distance*2/3, parameters.imt.num_clusters)
-        elif parameters.imt.topology == "MACROCELL":
-            return TopologyMacrocell(parameters.imt.intersite_distance, parameters.imt.num_clusters)
-        elif parameters.imt.topology == "HOTSPOT":
-            return TopologyHotspot(parameters.hotspot, parameters.imt.intersite_distance, parameters.imt.num_clusters)
-        elif parameters.imt.topology == "INDOOR":
+        if parameters.rlan.topology == "SINGLE_BS":
+            return TopologySingleBaseStation(parameters.rlan.intersite_distance*2/3, parameters.rlan.num_clusters)
+        elif parameters.rlan.topology == "MACROCELL":
+            return TopologyMacrocell(parameters.rlan.intersite_distance, parameters.rlan.num_clusters)
+        elif parameters.rlan.topology == "HOTSPOT":
+            return TopologyHotspot(parameters.hotspot, parameters.rlan.intersite_distance, parameters.rlan.num_clusters)
+        elif parameters.rlan.topology == "INDOOR":
             return TopologyIndoor(parameters.indoor)
         else:
-            sys.stderr.write("ERROR\nInvalid topology: " + parameters.imt.topology)
+            sys.stderr.write("ERROR\nInvalid topology: " + parameters.rlan.topology)
             sys.exit(1)            

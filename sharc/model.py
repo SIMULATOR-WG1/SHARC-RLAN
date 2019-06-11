@@ -44,7 +44,7 @@ class Model(Observable):
         self.parameters.set_file_name(self.param_file)
         self.parameters.read_params()
 
-        if self.parameters.general.imt_link == "DOWNLINK":
+        if self.parameters.general.rlan_link == "DOWNLINK":
             self.simulation = SimulationDownlink(self.parameters, self.param_file)
         else:
             self.simulation = SimulationUplink(self.parameters, self.param_file)
@@ -71,13 +71,13 @@ class Model(Observable):
     def get_description(self) -> str:
         param_system = self.simulation.param_system
 
-        description = "\nIMT:\n" \
-                            + "\tinterfered with: {:s}\n".format(str(self.parameters.imt.interfered_with)) \
-                            + "\tdirection: {:s}\n".format(self.parameters.general.imt_link) \
-                            + "\tfrequency: {:.3f} GHz\n".format(self.parameters.imt.frequency*1e-3) \
-                            + "\tbandwidth: {:.0f} MHz\n".format(self.parameters.imt.bandwidth) \
-                            + "\ttopology: {:s}\n".format(self.parameters.imt.topology) \
-                            + "\tpath loss model: {:s}\n".format(self.parameters.imt.channel_model)  \
+        description = "\nRLAN:\n" \
+                            + "\tinterfered with: {:s}\n".format(str(self.parameters.rlan.interfered_with)) \
+                            + "\tdirection: {:s}\n".format(self.parameters.general.rlan_link) \
+                            + "\tfrequency: {:.3f} GHz\n".format(self.parameters.rlan.frequency*1e-3) \
+                            + "\tbandwidth: {:.0f} MHz\n".format(self.parameters.rlan.bandwidth) \
+                            + "\ttopology: {:s}\n".format(self.parameters.rlan.topology) \
+                            + "\tpath loss model: {:s}\n".format(self.parameters.rlan.channel_model)  \
                     + "{:s}:\n".format(self.parameters.general.system) \
                             + "\tfrequency: {:.3f} GHz\n".format(param_system.frequency*1e-3) \
                             + "\tbandwidth: {:.0f} MHz\n".format(param_system.bandwidth) \

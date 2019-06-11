@@ -65,12 +65,12 @@ class PropagationP619(Propagation):
 
         earth_radius_km = sat_params.EARTH_RADIUS/1000
         a_acc = 0. # accumulated attenuation (in dB)
-        h = sat_params.imt_altitude/1000 # ray altitude in km
+        h = sat_params.rlan_altitude/1000 # ray altitude in km
         beta = (90-abs(apparent_elevation)) * np.pi / 180. # incidence angle
 
         if not surf_water_vapour_density:
             dummy, dummy, surf_water_vapour_density = \
-                self.atmosphere.get_reference_atmosphere_p835(sat_params.imt_lat_deg,
+                self.atmosphere.get_reference_atmosphere_p835(sat_params.rlan_lat_deg,
                                                                0, season="summer")
 
         # first, check if atmospheric loss was already calculated
@@ -206,7 +206,7 @@ class PropagationP619(Propagation):
                                                                     apparent_elevation=np.mean(elevation["apparent"]),
                                                                     sat_params=sat_params)
         beam_spreading_attenuation = self._get_beam_spreading_att(elevation["free_space"],
-                                                                  sat_params.imt_altitude,
+                                                                  sat_params.rlan_altitude,
                                                                   earth_to_space)
         diffraction_loss = 0
 
@@ -255,7 +255,7 @@ if __name__ == '__main__':
     # Plot atmospheric loss
     # compare with benchmark from ITU-R P-619 Fig. 3
     frequency_MHz = 30000.
-    sat_params.imt_altitude = 1000
+    sat_params.rlan_altitude = 1000
 
     apparent_elevation = range(-1, 90, 2)
 

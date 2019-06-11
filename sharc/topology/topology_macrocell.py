@@ -47,10 +47,10 @@ class TopologyMacrocell(Topology):
         Calculates the coordinates of the stations according to the inter-site
         distance parameter. This method is invoked in all snapshots but it can
         be called only once for the macro cell topology. So we set
-        static_base_stations to True to avoid unnecessary calculations.
+        static_access_pointss to True to avoid unnecessary calculations.
         """
-        if not self.static_base_stations:
-            self.static_base_stations = True
+        if not self.static_access_points:
+            self.static_access_points = True
 
             d = self.intersite_distance
             h = (d/3)*math.sqrt(3)/2
@@ -79,9 +79,9 @@ class TopologyMacrocell(Topology):
             self.elevation = np.tile(self.ELEVATION, 3*19*self.num_clusters)
 
             # In the end, we have to update the number of base stations
-            self.num_base_stations = len(self.x)
+            self.num_access_points = len(self.x)
             
-            self.indoor = np.zeros(self.num_base_stations, dtype = bool)
+            self.indoor = np.zeros(self.num_access_points, dtype = bool)
                 
     def plot(self, ax: matplotlib.axes.Axes):
         # create the hexagons

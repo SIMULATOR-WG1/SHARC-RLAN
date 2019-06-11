@@ -11,7 +11,7 @@ import math
 from sharc.support.enumerations import StationType
 from sharc.station import Station
 from sharc.antenna.antenna import Antenna
-from sharc.spectral_mask_imt import SpectralMaskImt
+from sharc.spectral_mask_rlan import SpectralMaskRlan
 from sharc.spectral_mask_3gpp import SpectralMask3Gpp
 
 class StationManager(object):
@@ -163,7 +163,7 @@ class StationManager(object):
     def get_elevation(self, station) -> np.array:
         """
         Calculates the elevation angle between stations. Can be used for
-        IMT stations.
+        RLAN stations.
         
         TODO: this implementation is essentialy the same as the one from 
               get_elevation_angle (free-space elevation angle), despite the

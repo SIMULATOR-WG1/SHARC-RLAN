@@ -9,9 +9,9 @@ import numpy as np
 
 from sharc.support.named_tuples import AntennaPar
 
-class AntennaElementImtM2101(object):
+class AntennaElementRlanM2101(object):
     """
-    Implements a single element of an IMT antenna array.
+    Implements a single element of an RLAN antenna array.
 
     Attributes
     ----------
@@ -24,11 +24,11 @@ class AntennaElementImtM2101(object):
 
     def __init__(self,par: AntennaPar):
         """
-        Constructs an AntennaElementImt object.
+        Constructs an AntennaElementRlan object.
 
         Parameters
         ---------
-            param (ParametersAntennaImt): antenna IMT parameters
+            param (ParametersAntennaRlan): antenna RLAN parameters
         """
         self.param = par
 

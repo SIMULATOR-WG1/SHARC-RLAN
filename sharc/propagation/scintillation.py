@@ -58,8 +58,8 @@ class Scintillation():
 
             temperature, \
             pressure, \
-            water_vapour_density = self.atmosphere.get_reference_atmosphere_p835(sat_params.imt_lat_deg,
-                                                                                 sat_params.imt_altitude,
+            water_vapour_density = self.atmosphere.get_reference_atmosphere_p835(sat_params.rlan_lat_deg,
+                                                                                 sat_params.rlan_altitude,
                                                                                  sat_params.season)
 
             # calculate saturation water vapour pressure according to ITU-R P.453-12

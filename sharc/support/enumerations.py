@@ -30,8 +30,8 @@ class StationType(Enum):
     Station types supported by simulator.
     """
     NONE   = 0  # Dummy enum, for initialization purposes only
-    IMT_BS = 1  # IMT Base Station
-    IMT_UE = 2  # IMT User Equipment
+    RLAN_AP = 1  # RLAN Base Station
+    RLAN_UE = 2  # RLAN User Equipment
     FSS_SS = 3  # FSS Space Station
     FSS_ES = 4  # FSS Earth Station
     FS     = 5  # Fixed Service
