@@ -33,9 +33,11 @@ class AntennaS580(Antenna):
         idx_0 = np.where(phi < self.phi_min)[0]
         gain[idx_0] = self.peak_gain
 
+        #ITU-R Recommend. S580-6. Recommends 1) 
         idx_1 = np.where((self.phi_min <= phi) & (phi < 20))[0]
         gain[idx_1] = 29 - 25 * np.log10(phi[idx_1])
-
+        
+        #ITU-R Recommend. 465-6 Recommends 2)
         idx_2 = np.where((20 <= phi) & (phi <= 180))[0]
         gain[idx_2] = -10
 
