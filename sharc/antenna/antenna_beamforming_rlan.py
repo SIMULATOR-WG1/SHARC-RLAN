@@ -10,15 +10,15 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
-from sharc.antenna.antenna_element_imt_m2101 import AntennaElementImtM2101
-from sharc.antenna.antenna_element_imt_f1336 import AntennaElementImtF1336
-from sharc.antenna.antenna_element_imt_const import AntennaElementImtConst
+from sharc.antenna.antenna_element_rlan_m2101 import AntennaElementRlanM2101
+from sharc.antenna.antenna_element_rlan_f1336 import AntennaElementRlanF1336
+from sharc.antenna.antenna_element_rlan_const import AntennaElementRlanConst
 from sharc.antenna.antenna import Antenna
 from sharc.support.named_tuples import AntennaPar
-from sharc.parameters.parameters_antenna_imt import ParametersAntennaImt
+from sharc.parameters.parameters_antenna_rlan import ParametersAntennaRlan
 
 
-class AntennaBeamformingImt(Antenna):
+class AntennaBeamformingRlan(Antenna):
     """
     Implements an antenna array
 
@@ -26,7 +26,7 @@ class AntennaBeamformingImt(Antenna):
     ----------
         azimuth (float): physical azimuth inclination
         elevation (float): physical elevation inclination
-        element (AntennaElementImt): antenna element
+        element (AntennaElementRlan): antenna element
         n_rows (int): number of rows in array
         n_cols (int): number of columns in array
         dh (float): horizontal element spacing over wavelenght (d/lambda)
@@ -44,13 +44,13 @@ class AntennaBeamformingImt(Antenna):
 
     def __init__(self, par: AntennaPar, azimuth: float, elevation: float):
         """
-        Constructs an AntennaBeamformingImt object.
+        Constructs an AntennaBeamformingRlan object.
         Does not receive angles in local coordinate system.
         Elevation taken with x axis as reference.
 
         Parameters
         ---------
-            param (AntennaPar): antenna IMT parameters
+            param (AntennaPar): antenna RLAN parameters
             azimuth (float): antenna's physical azimuth inclination
             elevation (float): antenna's physical elevation inclination
                 referenced in the x axis
@@ -59,11 +59,11 @@ class AntennaBeamformingImt(Antenna):
         self.param = par
 
         if (par.element_pattern).upper() == "M2101":
-            self.element = AntennaElementImtM2101(par)
+            self.element = AntennaElementRlanM2101(par)
         elif (par.element_pattern).upper() == "F1336":
-            self.element = AntennaElementImtF1336(par)
+            self.element = AntennaElementRlanF1336(par)
         elif (par.element_pattern).upper() == "FIXED":
-            self.element = AntennaElementImtConst(par)
+            self.element = AntennaElementRlanConst(par)
         else:
             sys.stderr.write("ERROR\nantenna element type {} not supported".format(par.element_pattern))
             sys.exit(1)
@@ -295,12 +295,12 @@ class AntennaBeamformingImt(Antenna):
 ###############################################################################
 class PlotAntennaPattern(object):
     """
-    Plots imt antenna pattern.
+    Plots rlan antenna pattern.
     """
     def __init__(self, figs_dir):
         self.figs_dir = figs_dir
 
-    def plot_element_pattern(self,antenna: AntennaBeamformingImt, sta_type: str, antenna_type: str, plot_type: str):
+    def plot_element_pattern(self,antenna: AntennaBeamformingRlan, sta_type: str, antenna_type: str, plot_type: str):
 
         phi_escan = 45
         theta_tilt = 120
@@ -328,9 +328,9 @@ class PlotAntennaPattern(object):
         ax1.set_ylabel("Gain [dBi]")
 
         if plot_type == "ELEMENT":
-            ax1.set_title("IMT " + sta_type + " element horizontal antenna pattern")
+            ax1.set_title("RLAN " + sta_type + " element horizontal antenna pattern")
         elif plot_type == "ARRAY":
-            ax1.set_title("IMT " + sta_type + " horizontal antenna pattern")
+            ax1.set_title("RLAN " + sta_type + " horizontal antenna pattern")
 
         ax1.set_xlim(-180, 180)
 
@@ -353,16 +353,16 @@ class PlotAntennaPattern(object):
         ax2.set_ylabel("Gain [dBi]")
 
         if plot_type == "ELEMENT":
-            ax2.set_title("IMT " + sta_type + " element vertical antenna pattern")
+            ax2.set_title("RLAN " + sta_type + " element vertical antenna pattern")
         elif plot_type == "ARRAY":
-            ax2.set_title("IMT " + sta_type + " vertical antenna pattern")
+            ax2.set_title("RLAN " + sta_type + " vertical antenna pattern")
 
         ax2.set_xlim(0, 180)
         if(np.max(gain) > top_y_lim): top_y_lim = np.ceil(np.max(gain)/10)*10
         ax2.set_ylim(top_y_lim - 60,top_y_lim)
 
-        if sta_type == "BS":
-            file_name = self.figs_dir + "bs_"
+        if sta_type == "AP":
+            file_name = self.figs_dir + "ap_"
         elif sta_type == "UE":
             file_name = self.figs_dir + "ue_"
 
@@ -384,22 +384,22 @@ if __name__ == '__main__':
 
     figs_dir = "figs/"
 
-    param = ParametersAntennaImt()
+    param = ParametersAntennaRlan()
     param.normalization = True
-    param.bs_normalization_file = 'beamforming_normalization\\bs_indoor_norm.npz'
+    param.ap_normalization_file = 'beamforming_normalization\\ap_indoor_norm.npz'
     param.ue_normalization_file = 'beamforming_normalization\\ue_norm.npz'
     
-    param.bs_element_pattern = "M2101"
-    param.bs_tx_element_max_g    = 5
-    param.bs_tx_element_phi_deg_3db  = 90
-    param.bs_tx_element_theta_deg_3db = 90
-    param.bs_tx_element_am       = 25
-    param.bs_tx_element_sla_v    = 25
-    param.bs_tx_n_rows           = 8
-    param.bs_tx_n_columns        = 16
-    param.bs_tx_element_horiz_spacing = 0.5
-    param.bs_tx_element_vert_spacing = 0.5
-    param.bs_downtilt_deg = 0
+    param.ap_element_pattern = "M2101"
+    param.ap_tx_element_max_g    = 5
+    param.ap_tx_element_phi_deg_3db  = 90
+    param.ap_tx_element_theta_deg_3db = 90
+    param.ap_tx_element_am       = 25
+    param.ap_tx_element_sla_v    = 25
+    param.ap_tx_n_rows           = 8
+    param.ap_tx_n_columns        = 16
+    param.ap_tx_element_horiz_spacing = 0.5
+    param.ap_tx_element_vert_spacing = 0.5
+    param.ap_downtilt_deg = 0
 
     param.ue_element_pattern = "M2101"
     param.ue_tx_element_max_g    = 5
@@ -415,17 +415,17 @@ if __name__ == '__main__':
 
     plot = PlotAntennaPattern(figs_dir)
 
-    # Plot BS TX radiation patterns
-    par = param.get_antenna_parameters("BS","TX")
-    bs_array = AntennaBeamformingImt(par,0,0)
-    f = plot.plot_element_pattern(bs_array,"BS","TX","ELEMENT")
-    f.savefig(figs_dir + "BS_element.pdf", bbox_inches='tight')
-    f = plot.plot_element_pattern(bs_array,"BS","TX","ARRAY")
-    f.savefig(figs_dir + "BS_array.pdf", bbox_inches='tight')
+    # Plot AP TX radiation patterns
+    par = param.get_antenna_parameters("AP","TX")
+    ap_array = AntennaBeamformingRlan(par,0,0)
+    f = plot.plot_element_pattern(ap_array,"AP","TX","ELEMENT")
+    f.savefig(figs_dir + "AP_element.pdf", bbox_inches='tight')
+    f = plot.plot_element_pattern(ap_array,"AP","TX","ARRAY")
+    f.savefig(figs_dir + "AP_array.pdf", bbox_inches='tight')
 
     # Plot UE TX radiation patterns
     par = param.get_antenna_parameters("UE","TX")
-    ue_array = AntennaBeamformingImt(par,0,0)
+    ue_array = AntennaBeamformingRlan(par,0,0)
     plot.plot_element_pattern(ue_array,"UE","TX","ELEMENT")
     plot.plot_element_pattern(ue_array,"UE","TX","ARRAY")
 

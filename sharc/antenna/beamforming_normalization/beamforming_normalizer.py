@@ -9,7 +9,7 @@ import numpy as np
 from scipy.integrate import dblquad
 from sys import stdout
 
-from sharc.antenna.antenna_beamforming_imt import AntennaBeamformingImt
+from sharc.antenna.antenna_beamforming_rlan import AntennaBeamformingRlan
 from sharc.support.named_tuples import AntennaPar
 
 
@@ -36,7 +36,7 @@ class BeamformingNormalizer(object):
         self.phi_vals_deg (np.array): all phi escan values for given resolution
         self.phi_vals_deg (np.array): all theta tilt values for given
             resolution
-        antenna (AntennaBeamformingImt): antenna to which calculate
+        antenna (AntennaBeamformingRlan): antenna to which calculate
             normalization
     """
     def __init__(self, res_deg: float, tol: float):
@@ -79,7 +79,7 @@ class BeamformingNormalizer(object):
         # Create antenna object
         azi = 0 # Antenna azimuth: 0 degrees for simplicity
         ele = 0 # Antenna elevation: 0 degrees as well
-        self.antenna = AntennaBeamformingImt(par,azi,ele)
+        self.antenna = AntennaBeamformingRlan(par,azi,ele)
 
         # For co-channel beamforming
         # Correction factor numpy array

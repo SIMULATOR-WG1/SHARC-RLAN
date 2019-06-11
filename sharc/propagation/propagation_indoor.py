@@ -19,12 +19,12 @@ from cycler import cycler
 class PropagationIndoor(Propagation):
     """
     This is a wrapper class which can be used for indoor simulations. It
-    calculates the basic path loss between BS's and UE's of the same building,
-    assuming 3 BS's per building. It also includes an additional building
-    entry loss for the outdoor UE's that are served by indoor BS's.
+    calculates the basic path loss between AP's and UE's of the same building,
+    assuming 3 AP's per building. It also includes an additional building
+    entry loss for the outdoor UE's that are served by indoor AP's.
     """
 
-    # For BS and UE that are not in the same building, this value is assigned
+    # For AP and UE that are not in the same building, this value is assigned
     # so this kind of inter-building interference will not be effectivelly
     # taken into account during SINR calculations. This is assumption
     # simplifies the implementation and it is reasonable: intra-building
@@ -44,7 +44,7 @@ class PropagationIndoor(Propagation):
 
         self.bel = PropagationBuildingEntryLoss(random_number_gen)
         self.building_class = param.building_class
-        self.bs_per_building = param.num_cells
+        self.ap_per_building = param.num_cells
         self.ue_per_building = ue_per_cell*param.num_cells
 
     def get_loss(self, *args, **kwargs) -> np.array:
@@ -56,7 +56,7 @@ class PropagationIndoor(Propagation):
         ----------
             distance_3D (np.array) : 3D distances between stations
             distance_2D (np.array) : 2D distances between stations
-            elevation (np.array) : elevation angles from UE's to BS's
+            elevation (np.array) : elevation angles from UE's to AP's
             frequency (np.array) : center frequencie [MHz]
             indoor (np.array) : indicates whether UE is indoor
             shadowing (bool) : if shadowing should be added or not
@@ -74,10 +74,10 @@ class PropagationIndoor(Propagation):
         shadowing = kwargs["shadowing"]
 
         loss = PropagationIndoor.HIGH_PATH_LOSS*np.ones(frequency.shape)
-        iter = int(frequency.shape[0]/self.bs_per_building)
+        iter = int(frequency.shape[0]/self.ap_per_building)
         for i in range(iter):
-            bi = int(self.bs_per_building*i)
-            bf = int(self.bs_per_building*(i+1))
+            bi = int(self.ap_per_building*i)
+            bf = int(self.ap_per_building*(i+1))
             ui = int(self.ue_per_building*i)
             uf = int(self.ue_per_building*(i+1))
 
@@ -89,7 +89,7 @@ class PropagationIndoor(Propagation):
                                                   shadowing = shadowing)
 
             # calculates the additional building entry loss for outdoor UE's
-            # that are served by indoor BS's
+            # that are served by indoor AP's
             bel = (~ indoor[0,ui:uf]) * self.bel.get_loss(frequency[bi:bf,ui:uf], elevation[bi:bf,ui:uf], "RANDOM", self.building_class)
 
             loss[bi:bf,ui:uf] = loss[bi:bf,ui:uf] + bel
@@ -107,21 +107,21 @@ if __name__ == '__main__':
     params.num_cells = 3
     params.building_class = "TRADITIONAL"
 
-    bs_per_building = 3
-    ue_per_bs = 3
+    ap_per_building = 3
+    ue_per_ap = 3
 
-    num_bs = bs_per_building*params.n_rows*params.n_colums
-    num_ue = num_bs*ue_per_bs
-    distance_2D = 150*np.random.random((num_bs, num_ue))
+    num_ap = ap_per_building*params.n_rows*params.n_colums
+    num_ue = num_ap*ue_per_ap
+    distance_2D = 150*np.random.random((num_ap, num_ue))
     frequency = 27000*np.ones(distance_2D.shape)
-    indoor = np.random.rand(num_bs) < params.ue_indoor_percent
-    h_bs = 3*np.ones(num_bs)
+    indoor = np.random.rand(num_ap) < params.ue_indoor_percent
+    h_ap = 3*np.ones(num_ap)
     h_ue = 1.5*np.ones(num_ue)
-    distance_3D = np.sqrt(distance_2D**2 + (h_bs[:,np.newaxis] - h_ue)**2)
-    height_diff = np.tile(h_bs, (num_bs, 3)) - np.tile(h_ue, (num_bs, 1))
+    distance_3D = np.sqrt(distance_2D**2 + (h_ap[:,np.newaxis] - h_ue)**2)
+    height_diff = np.tile(h_ap, (num_ap, 3)) - np.tile(h_ue, (num_ap, 1))
     elevation = np.degrees(np.arctan(height_diff/distance_2D))
 
-    propagation_indoor = PropagationIndoor(np.random.RandomState(),params,ue_per_bs)
+    propagation_indoor = PropagationIndoor(np.random.RandomState(),params,ue_per_ap)
     loss_indoor = propagation_indoor.get_loss(distance_3D = distance_3D,
                                               distance_2D = distance_2D,
                                               elevation = elevation,

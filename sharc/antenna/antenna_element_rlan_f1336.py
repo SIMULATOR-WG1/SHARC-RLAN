@@ -10,9 +10,9 @@ import sys
 
 from sharc.support.named_tuples import AntennaPar
 
-class AntennaElementImtF1336(object):
+class AntennaElementRlanF1336(object):
     """
-    Implements a single element of an IMT antenna array following ITU-R F.1336-4, item 3.1.1
+    Implements a single element of an RLAN antenna array following ITU-R F.1336-4, item 3.1.1
     using parameters from ITU-R M2292
 
     Attributes
@@ -26,11 +26,11 @@ class AntennaElementImtF1336(object):
 
     def __init__(self,par: AntennaPar):
         """
-        Constructs an AntennaElementImt object.
+        Constructs an AntennaElementRlan object.
 
         Parameters
         ---------
-            param (ParametersAntennaImt): antenna IMT parameters
+            param (ParametersAntennaRlan): antenna RLAN parameters
         """
         self.param = par
 
@@ -147,10 +147,10 @@ class AntennaElementImtF1336(object):
 
 if __name__ == '__main__':
 
-    from sharc.parameters.parameters_antenna_imt import ParametersAntennaImt
+    from sharc.parameters.parameters_antenna_rlan import ParametersAntennaRlan
     from matplotlib import pyplot as plt
 
-    param = ParametersAntennaImt()
+    param = ParametersAntennaRlan()
 
     param.element_max_g = 15
     param.element_phi_deg_3db = 65
@@ -159,7 +159,7 @@ if __name__ == '__main__':
     # 0 degrees tilt
     param.downtilt_deg = 0
 
-    antenna = AntennaElementImtF1336( param )
+    antenna = AntennaElementRlanF1336( param )
 
     phi_vec = np.arange(-180,180, step = 5)
     theta_vec = np.arange(0,90, step = 3)
@@ -215,7 +215,7 @@ if __name__ == '__main__':
 
     # x degrees tilt
     param.downtilt_deg = 10
-    antenna = AntennaElementImtF1336(param)
+    antenna = AntennaElementRlanF1336(param)
 
     for phi, index in zip(phi_vec, range(len(phi_vec))):
         pattern_hor_0deg[index] = antenna.element_pattern(phi, 0)

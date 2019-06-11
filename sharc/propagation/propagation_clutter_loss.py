@@ -28,7 +28,7 @@ class PropagationClutterLoss(Propagation):
             elevation (np.array) : elevation angles [deg]
             loc_percentage (np.array) : Percentage locations range [0, 1[
                                         "RANDOM" for random percentage (Default = RANDOM)
-            station_type (StationType) : if type is IMT or FSS_ES, assume terrestrial
+            station_type (StationType) : if type is RLAN or FSS_ES, assume terrestrial
                 terminal within the clutter (ref § 3.2); otherwise, assume that
                 one terminal is within the clutter and the other is a satellite,
                 aeroplane or other platform above the surface of the Earth.
@@ -52,7 +52,7 @@ class PropagationClutterLoss(Propagation):
         else:
             p = loc_per*np.ones(d.shape)
 
-        if type is StationType.IMT_BS or type is StationType.IMT_UE or type is StationType.FSS_ES:
+        if type is StationType.RLAN_AP or type is StationType.RLAN_UE or type is StationType.FSS_ES:
             loss = self.get_terrestrial_clutter_loss(f, d, p)
         else:
             theta = kwargs["elevation"]

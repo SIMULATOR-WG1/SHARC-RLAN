@@ -82,16 +82,16 @@ class TopologyHotspot(Topology):
                 hotspot_y = hotspot_radius*np.sin(hotspot_angle) + macro_cell_y
                 hotspot_azimuth = random_number_gen.choice(self.AZIMUTH, self.param.num_hotspots_per_cell)
                 # Hotspots within a cell are validated if they do not overlap
-                # and if they have the minimum separation distance from macro BS
+                # and if they have the minimum separation distance from macro AP
                 hotspots_validated = (not self.overlapping_hotspots(hotspot_x,
                                                                     hotspot_y,
                                                                     hotspot_azimuth,
                                                                     self.cell_radius*np.ones(self.param.num_hotspots_per_cell))) and \
-                                          self.validade_min_dist_bs_hotspot(hotspot_x,
+                                          self.validade_min_dist_ap_hotspot(hotspot_x,
                                                                             hotspot_y,
                                                                             self.macrocell.x,
                                                                             self.macrocell.y,
-                                                                            self.param.min_dist_bs_hotspot)
+                                                                            self.param.min_dist_ap_hotspot)
                 num_loops = num_loops + 1
                 if num_loops > TopologyHotspot.MAX_NUM_LOOPS:
                     sys.stderr.write("ERROR\nInfinite loop while creating hotspots.\nTry less hotspots per cell or greater macro cell intersite distance.\n")
@@ -105,8 +105,8 @@ class TopologyHotspot(Topology):
         self.azimuth = azimuth
         self.elevation = self.ELEVATION*np.ones(len(self.x))
         # In the end, we have to update the number of base stations
-        self.num_base_stations = len(self.x)
-        self.indoor = np.zeros(self.num_base_stations, dtype = bool)
+        self.num_access_points = len(self.x)
+        self.indoor = np.zeros(self.num_access_points, dtype = bool)
 
 
     def overlapping_hotspots(self,
@@ -179,12 +179,12 @@ class TopologyHotspot(Topology):
         return len(occ) == num_hotpots
 
 
-    def validade_min_dist_bs_hotspot(self,
+    def validade_min_dist_ap_hotspot(self,
                                      hotspot_x: np.array,
                                      hotspot_y: np.array,
                                      macrocell_x: np.array,
                                      macrocell_y: np.array,
-                                     min_dist_bs_hotspot: float) -> bool:
+                                     min_dist_ap_hotspot: float) -> bool:
         """
         Checks minimum 2D distance between macro cell base stations and
         hotspots.
@@ -203,7 +203,7 @@ class TopologyHotspot(Topology):
         # count the number of values that are less than the minimum distance and
         # return true if any value is equal os less than minimum 2D distance
         # between macro cell base stations and hotspot centers
-        occ = np.where(distance < min_dist_bs_hotspot)[0]
+        occ = np.where(distance < min_dist_ap_hotspot)[0]
         return len(occ) == 0
 
 
@@ -229,7 +229,7 @@ if __name__ == '__main__':
 
     param.max_dist_hotspot_ue = 60
     param.min_dist_hotspot_ue = 5
-    param.min_dist_bs_hotspot = 100
+    param.min_dist_ap_hotspot = 100
     param.min_dist_hotspots = 2*param.max_dist_hotspot_ue
 
     #intersite_distance = 500

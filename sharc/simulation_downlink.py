@@ -31,7 +31,7 @@ class SimulationDownlink(Simulation):
 
         random_number_gen = np.random.RandomState(seed)
 
-        self.propagation_imt = PropagationFactory.create_propagation(self.parameters.imt.channel_model, self.parameters,
+        self.propagation_rlan = PropagationFactory.create_propagation(self.parameters.rlan.channel_model, self.parameters,
                                                                     random_number_gen)
         self.propagation_system = PropagationFactory.create_propagation(self.param_system.channel_model, self.parameters,
                                                                        random_number_gen)
@@ -43,36 +43,36 @@ class SimulationDownlink(Simulation):
 
         # Create the base stations (remember that it takes into account the
         # network load factor)
-        self.bs = StationFactory.generate_imt_base_stations(self.parameters.imt,
-                                                            self.parameters.antenna_imt,
+        self.ap = StationFactory.generate_rlan_access_points(self.parameters.rlan,
+                                                            self.parameters.antenna_rlan,
                                                             self.topology, random_number_gen)
 
         # Create the other system (FSS, HAPS, etc...)
         self.system = StationFactory.generate_system(self.parameters, self.topology, random_number_gen)
 
-        # Create IMT user equipments
-        self.ue = StationFactory.generate_imt_ue(self.parameters.imt,
-                                                 self.parameters.antenna_imt,
+        # Create RLAN user equipments
+        self.ue = StationFactory.generate_rlan_ue(self.parameters.rlan,
+                                                 self.parameters.antenna_rlan,
                                                  self.topology, random_number_gen)
 
-        self.connect_ue_to_bs()
+        self.connect_ue_to_ap()
         self.select_ue(random_number_gen)
 
         # Calculate coupling loss after beams are created
-        self.coupling_loss_imt = self.calculate_coupling_loss(self.bs,
+        self.coupling_loss_rlan = self.calculate_coupling_loss(self.ap,
                                                               self.ue,
-                                                              self.propagation_imt)
+                                                              self.propagation_rlan)
         self.scheduler()
         self.power_control()
 
-        if self.parameters.imt.interfered_with:
+        if self.parameters.rlan.interfered_with:
             # Execute this piece of code if the other system generates
-            # interference into IMT
+            # interference into RLAN
             self.calculate_sinr()
             self.calculate_sinr_ext()
             pass
         else:
-            # Execute this piece of code if IMT generates interference into
+            # Execute this piece of code if RLAN generates interference into
             # the other system
             self.calculate_sinr()
             self.calculate_external_interference()
@@ -89,46 +89,46 @@ class SimulationDownlink(Simulation):
         """
         # Currently, the maximum transmit power of the base station is equaly
         # divided among the selected UEs
-        total_power = self.parameters.imt.bs_conducted_power \
-                      + self.bs_power_gain
-        tx_power = total_power - 10 * math.log10(self.parameters.imt.ue_k)
+        total_power = self.parameters.rlan.ap_conducted_power \
+                      + self.ap_power_gain
+        tx_power = total_power - 10 * math.log10(self.parameters.rlan.ue_k)
         # calculate transmit powers to have a structure such as
-        # {bs_1: [pwr_1, pwr_2,...], ...}, where bs_1 is the base station id,
-        # pwr_1 is the transmit power from bs_1 to ue_1, pwr_2 is the transmit
-        # power from bs_1 to ue_2, etc
-        bs_active = np.where(self.bs.active)[0]
-        self.bs.tx_power = dict([(bs, tx_power*np.ones(self.parameters.imt.ue_k)) for bs in bs_active])
+        # {ap_1: [pwr_1, pwr_2,...], ...}, where ap_1 is the base station id,
+        # pwr_1 is the transmit power from ap_1 to ue_1, pwr_2 is the transmit
+        # power from ap_1 to ue_2, etc
+        ap_active = np.where(self.ap.active)[0]
+        self.ap.tx_power = dict([(ap, tx_power*np.ones(self.parameters.rlan.ue_k)) for ap in ap_active])
 
         # Update the spectral mask
         if self.adjacent_channel:
-            self.bs.spectral_mask.set_mask(power = total_power)
+            self.ap.spectral_mask.set_mask(power = total_power)
 
     def calculate_sinr(self):
         """
         Calculates the downlink SINR for each UE.
         """
-        bs_active = np.where(self.bs.active)[0]
-        for bs in bs_active:
-            ue = self.link[bs]
-            self.ue.rx_power[ue] = self.bs.tx_power[bs] - self.parameters.imt.bs_ohmic_loss \
-                                       - self.coupling_loss_imt[bs,ue] \
-                                       - self.parameters.imt.ue_body_loss \
-                                       - self.parameters.imt.ue_ohmic_loss
+        ap_active = np.where(self.ap.active)[0]
+        for ap in ap_active:
+            ue = self.link[ap]
+            self.ue.rx_power[ue] = self.ap.tx_power[ap] - self.parameters.rlan.ap_ohmic_loss \
+                                       - self.coupling_loss_rlan[ap,ue] \
+                                       - self.parameters.rlan.ue_body_loss \
+                                       - self.parameters.rlan.ue_ohmic_loss
 
             # create a list with base stations that generate interference in ue_list
-            bs_interf = [b for b in bs_active if b not in [bs]]
+            ap_interf = [b for b in ap_active if b not in [ap]]
 
             # calculate intra system interference
-            for bi in bs_interf:
-                interference = self.bs.tx_power[bi] - self.parameters.imt.bs_ohmic_loss \
-                                 - self.coupling_loss_imt[bi,ue] \
-                                 - self.parameters.imt.ue_body_loss - self.parameters.imt.ue_ohmic_loss
+            for bi in ap_interf:
+                interference = self.ap.tx_power[bi] - self.parameters.rlan.ap_ohmic_loss \
+                                 - self.coupling_loss_rlan[bi,ue] \
+                                 - self.parameters.rlan.ue_body_loss - self.parameters.rlan.ue_ohmic_loss
 
                 self.ue.rx_interference[ue] = 10*np.log10( \
                     np.power(10, 0.1*self.ue.rx_interference[ue]) + np.power(10, 0.1*interference))
 
         self.ue.thermal_noise = \
-            10*math.log10(self.parameters.imt.BOLTZMANN_CONSTANT*self.parameters.imt.noise_temperature*1e3) + \
+            10*math.log10(self.parameters.rlan.BOLTZMANN_CONSTANT*self.parameters.rlan.noise_temperature*1e3) + \
             10*np.log10(self.ue.bandwidth * 1e6) + \
             self.ue.noise_figure
 
@@ -142,9 +142,9 @@ class SimulationDownlink(Simulation):
     def calculate_sinr_ext(self):
         """
         Calculates the downlink SINR and INR for each UE taking into account the
-        interference that is generated by the other system into IMT system.
+        interference that is generated by the other system into RLAN system.
         """
-        self.coupling_loss_imt_system = self.calculate_coupling_loss(self.system,
+        self.coupling_loss_rlan_system = self.calculate_coupling_loss(self.system,
                                                                      self.ue,
                                                                      self.propagation_system,
                                                                      c_channel = self.co_channel)
@@ -155,8 +155,8 @@ class SimulationDownlink(Simulation):
         ue = np.where(self.ue.active)[0]
 
         tx_power_sys = self.param_system.tx_power_density + 10*np.log10(self.ue.bandwidth[ue]*1e6) + 30
-        self.ue.ext_interference[ue] = tx_power_sys - self.coupling_loss_imt_system[ue] \
-                            - self.parameters.imt.ue_body_loss - self.parameters.imt.ue_ohmic_loss
+        self.ue.ext_interference[ue] = tx_power_sys - self.coupling_loss_rlan_system[ue] \
+                            - self.parameters.rlan.ue_body_loss - self.parameters.rlan.ue_ohmic_loss
 
         self.ue.sinr_ext[ue] = self.ue.rx_power[ue] \
             - (10*np.log10(np.power(10, 0.1*self.ue.total_interference[ue]) + np.power(10, 0.1*self.ue.ext_interference[ue])))
@@ -164,17 +164,17 @@ class SimulationDownlink(Simulation):
 
     def calculate_external_interference(self):
         """
-        Calculates interference that IMT system generates on other system
+        Calculates interference that RLAN system generates on other system
         """
 
         if self.co_channel:
-            self.coupling_loss_imt_system = self.calculate_coupling_loss(self.system,
-                                                                     self.bs,
+            self.coupling_loss_rlan_system = self.calculate_coupling_loss(self.system,
+                                                                     self.ap,
                                                                      self.propagation_system) + self.polarization_loss
 
         if self.adjacent_channel:
-            self.coupling_loss_imt_system_adjacent = self.calculate_coupling_loss(self.system,
-                                                                     self.bs,
+            self.coupling_loss_rlan_system_adjacent = self.calculate_coupling_loss(self.system,
+                                                                     self.ap,
                                                                      self.propagation_system,
                                                                      c_channel=False) + self.polarization_loss
 
@@ -183,10 +183,10 @@ class SimulationDownlink(Simulation):
         # calculate interference only from active UE's
         rx_interference = 0
 
-        bs_active = np.where(self.bs.active)[0]
-        for bs in bs_active:
+        ap_active = np.where(self.ap.active)[0]
+        for ap in ap_active:
 
-            active_beams = [i for i in range(bs*self.parameters.imt.ue_k, (bs+1)*self.parameters.imt.ue_k)]
+            active_beams = [i for i in range(ap*self.parameters.rlan.ue_k, (ap+1)*self.parameters.rlan.ue_k)]
 
             if self.co_channel:
                 if self.overlapping_bandwidth:
@@ -194,19 +194,19 @@ class SimulationDownlink(Simulation):
                 else:
                     acs = self.param_system.adjacent_ch_selectivity
 
-                interference = self.bs.tx_power[bs] - self.parameters.imt.bs_ohmic_loss \
-                             - self.coupling_loss_imt_system[active_beams]
-                weights = self.calculate_bw_weights(self.parameters.imt.bandwidth,
+                interference = self.ap.tx_power[ap] - self.parameters.rlan.ap_ohmic_loss \
+                             - self.coupling_loss_rlan_system[active_beams]
+                weights = self.calculate_bw_weights(self.parameters.rlan.bandwidth,
                                                     self.param_system.bandwidth,
-                                                    self.parameters.imt.ue_k)
+                                                    self.parameters.rlan.ue_k)
 
                 rx_interference += np.sum(weights*np.power(10, 0.1*interference)) / 10**(acs/10.)
 
             if self.adjacent_channel:
 
-                oob_power = self.bs.spectral_mask.power_calc(self.param_system.frequency,self.system.bandwidth)
+                oob_power = self.ap.spectral_mask.power_calc(self.param_system.frequency,self.system.bandwidth)
 
-                oob_interference = oob_power - self.coupling_loss_imt_system_adjacent[active_beams[0]] \
+                oob_interference = oob_power - self.coupling_loss_rlan_system_adjacent[active_beams[0]] \
                                    + 10*np.log10((self.param_system.bandwidth - self.overlapping_bandwidth)/
                                                  self.param_system.bandwidth)
                                    
@@ -227,56 +227,56 @@ class SimulationDownlink(Simulation):
             self.system.pfd = 10*np.log10(10**(self.system.rx_interference/10)/self.system.antenna[0].effective_area)
 
     def collect_results(self, write_to_file: bool, snapshot_number: int):
-        if not self.parameters.imt.interfered_with and np.any(self.bs.active):
+        if not self.parameters.rlan.interfered_with and np.any(self.ap.active):
             self.results.system_inr.extend(self.system.inr.tolist())
             self.results.system_inr_scaled.extend([self.system.inr + 10*math.log10(self.param_system.inr_scaling)])
             if self.system.station_type is StationType.RAS:
                 self.results.system_pfd.extend([self.system.pfd])
                 self.results.system_dl_interf_power.extend([self.system.rx_interference])
 
-        bs_active = np.where(self.bs.active)[0]
-        for bs in bs_active:
-            ue = self.link[bs]
-            self.results.imt_path_loss.extend(self.path_loss_imt[bs,ue])
-            self.results.imt_coupling_loss.extend(self.coupling_loss_imt[bs,ue])
+        ap_active = np.where(self.ap.active)[0]
+        for ap in ap_active:
+            ue = self.link[ap]
+            self.results.rlan_path_loss.extend(self.path_loss_rlan[ap,ue])
+            self.results.rlan_coupling_loss.extend(self.coupling_loss_rlan[ap,ue])
 
-            self.results.imt_bs_antenna_gain.extend(self.imt_bs_antenna_gain[bs,ue])
-            self.results.imt_ue_antenna_gain.extend(self.imt_ue_antenna_gain[bs,ue])
+            self.results.rlan_ap_antenna_gain.extend(self.rlan_ap_antenna_gain[ap,ue])
+            self.results.rlan_ue_antenna_gain.extend(self.rlan_ue_antenna_gain[ap,ue])
 
-            tput = self.calculate_imt_tput(self.ue.sinr[ue],
-                                           self.parameters.imt.dl_sinr_min,
-                                           self.parameters.imt.dl_sinr_max,
-                                           self.parameters.imt.dl_attenuation_factor)
-            self.results.imt_dl_tput.extend(tput.tolist())
+            tput = self.calculate_rlan_tput(self.ue.sinr[ue],
+                                           self.parameters.rlan.dl_sinr_min,
+                                           self.parameters.rlan.dl_sinr_max,
+                                           self.parameters.rlan.dl_attenuation_factor)
+            self.results.rlan_dl_tput.extend(tput.tolist())
 
-            if self.parameters.imt.interfered_with:
-                tput_ext = self.calculate_imt_tput(self.ue.sinr_ext[ue],
-                                                   self.parameters.imt.dl_sinr_min,
-                                                   self.parameters.imt.dl_sinr_max,
-                                                   self.parameters.imt.dl_attenuation_factor)
-                self.results.imt_dl_tput_ext.extend(tput_ext.tolist())
-                self.results.imt_dl_sinr_ext.extend(self.ue.sinr_ext[ue].tolist())
-                self.results.imt_dl_inr.extend(self.ue.inr[ue].tolist())
+            if self.parameters.rlan.interfered_with:
+                tput_ext = self.calculate_rlan_tput(self.ue.sinr_ext[ue],
+                                                   self.parameters.rlan.dl_sinr_min,
+                                                   self.parameters.rlan.dl_sinr_max,
+                                                   self.parameters.rlan.dl_attenuation_factor)
+                self.results.rlan_dl_tput_ext.extend(tput_ext.tolist())
+                self.results.rlan_dl_sinr_ext.extend(self.ue.sinr_ext[ue].tolist())
+                self.results.rlan_dl_inr.extend(self.ue.inr[ue].tolist())
 
-                self.results.system_imt_antenna_gain.extend(self.system_imt_antenna_gain[0,ue])
-                self.results.imt_system_antenna_gain.extend(self.imt_system_antenna_gain[0,ue])
-                self.results.imt_system_path_loss.extend(self.imt_system_path_loss[0,ue])
+                self.results.system_rlan_antenna_gain.extend(self.system_rlan_antenna_gain[0,ue])
+                self.results.rlan_system_antenna_gain.extend(self.rlan_system_antenna_gain[0,ue])
+                self.results.rlan_system_path_loss.extend(self.rlan_system_path_loss[0,ue])
                 if self.param_system.channel_model == "HDFSS":
-                    self.results.imt_system_build_entry_loss.extend(self.imt_system_build_entry_loss[0,ue])
-                    self.results.imt_system_diffraction_loss.extend(self.imt_system_diffraction_loss[0,ue])
+                    self.results.rlan_system_build_entry_loss.extend(self.rlan_system_build_entry_loss[0,ue])
+                    self.results.rlan_system_diffraction_loss.extend(self.rlan_system_diffraction_loss[0,ue])
             else:
-                active_beams = [i for i in range(bs*self.parameters.imt.ue_k, (bs+1)*self.parameters.imt.ue_k)]
-                self.results.system_imt_antenna_gain.extend(self.system_imt_antenna_gain[0,active_beams])
-                self.results.imt_system_antenna_gain.extend(self.imt_system_antenna_gain[0,active_beams])
-                self.results.imt_system_path_loss.extend(self.imt_system_path_loss[0,active_beams])
+                active_beams = [i for i in range(ap*self.parameters.rlan.ue_k, (ap+1)*self.parameters.rlan.ue_k)]
+                self.results.system_rlan_antenna_gain.extend(self.system_rlan_antenna_gain[0,active_beams])
+                self.results.rlan_system_antenna_gain.extend(self.rlan_system_antenna_gain[0,active_beams])
+                self.results.rlan_system_path_loss.extend(self.rlan_system_path_loss[0,active_beams])
                 if self.param_system.channel_model == "HDFSS":
-                    self.results.imt_system_build_entry_loss.extend(self.imt_system_build_entry_loss[:,bs])
-                    self.results.imt_system_diffraction_loss.extend(self.imt_system_diffraction_loss[:,bs])
+                    self.results.rlan_system_build_entry_loss.extend(self.rlan_system_build_entry_loss[:,ap])
+                    self.results.rlan_system_diffraction_loss.extend(self.rlan_system_diffraction_loss[:,ap])
 
-            self.results.imt_dl_tx_power.extend(self.bs.tx_power[bs].tolist())
+            self.results.rlan_dl_tx_power.extend(self.ap.tx_power[ap].tolist())
 
-            self.results.imt_dl_sinr.extend(self.ue.sinr[ue].tolist())
-            self.results.imt_dl_snr.extend(self.ue.snr[ue].tolist())
+            self.results.rlan_dl_sinr.extend(self.ue.sinr[ue].tolist())
+            self.results.rlan_dl_snr.extend(self.ue.snr[ue].tolist())
 
         if write_to_file:
             self.results.write_files(snapshot_number)

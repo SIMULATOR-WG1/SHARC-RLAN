@@ -75,7 +75,7 @@ class PropagationInhOffice(Propagation):
 
         Parameters
         ----------
-            distance_3D : array of 3D distances between BS and UE [m]
+            distance_3D : array of 3D distances between AP and UE [m]
             frequency : center frequency [MHz]
             shadowing_std : standard deviation of shadowing [dB]
 
@@ -103,7 +103,7 @@ class PropagationInhOffice(Propagation):
 
         Parameters
         ----------
-            distance_3D : array of 3D distances between BS and UE [m]
+            distance_3D : array of 3D distances between AP and UE [m]
             frequency : center frequency [MHz]
             shadowing_std : standard deviation of shadowing [dB]
 
@@ -195,9 +195,9 @@ if __name__ == '__main__':
     shadowing = 0
     distance_2D = np.linspace(1, 150, num=1000)[:,np.newaxis]
     frequency = 27000*np.ones(distance_2D.shape)
-    h_bs = 3*np.ones(len(distance_2D[:,0]))
+    h_ap = 3*np.ones(len(distance_2D[:,0]))
     h_ue = 1.5*np.ones(len(distance_2D[0,:]))
-    distance_3D = np.sqrt(distance_2D**2 + (h_bs[:,np.newaxis] - h_ue)**2)
+    distance_3D = np.sqrt(distance_2D**2 + (h_ap[:,np.newaxis] - h_ue)**2)
     indoor = np.ones(len(distance_2D[0,:]), dtype = bool)
 
     loss_fs = PropagationFreeSpace(np.random.RandomState()).get_loss(distance_3D=distance_3D, frequency=frequency)

@@ -11,7 +11,7 @@ from sharc.spectral_mask import SpectralMask
 import numpy as np
 import matplotlib.pyplot as plt
 
-class SpectralMaskImt(SpectralMask):
+class SpectralMaskRlan(SpectralMask):
     """
     Implements spectral masks from document ITU 265-E. The masks are in the
     document's tables 1 to 8.
@@ -27,7 +27,7 @@ class SpectralMaskImt(SpectralMask):
         freq_lim (no.array): frequency values for which the spectral mask
             changes emission value
         sta_type (StationType): type of station to which consider the spectral
-            mask. Possible values are StationType.IMT_BS and StationType.IMT_UE
+            mask. Possible values are StationType.RLAN_AP and StationType.RLAN_UE
         freq_mhz (float): center frequency of station in MHz
         band_mhs (float): transmitting bandwidth of station in MHz
         scenario (str): INDOOR or OUTDOOR scenario
@@ -40,8 +40,8 @@ class SpectralMaskImt(SpectralMask):
         
         Parameters:
             sta_type (StationType): type of station to which consider the spectral
-                mask. Possible values are StationType.IMT_BS and StationType.
-                IMT_UE
+                mask. Possible values are StationType.RLAN_AP and StationType.
+                RLAN_UE
             freq_mhz (float): center frequency of station in MHz
             band_mhs (float): transmitting bandwidth of station in MHz
             scenario (str): INDOOR or OUTDOOR scenario
@@ -72,11 +72,11 @@ class SpectralMaskImt(SpectralMask):
         self.p_tx = power - 10*np.log10(self.band_mhz)
         
         # Set new transmit power value       
-        if self.sta_type is StationType.IMT_UE:
+        if self.sta_type is StationType.RLAN_UE:
             # Table 8
             mask_dbm = np.array([-5, -13, self.spurious_emissions])
             
-        elif self.sta_type is StationType.IMT_BS and self.scenario is "INDOOR":             
+        elif self.sta_type is StationType.RLAN_AP and self.scenario is "INDOOR":             
             # Table 1
             mask_dbm = np.array([-5, -13, self.spurious_emissions])
             
@@ -115,13 +115,13 @@ class SpectralMaskImt(SpectralMask):
         
 if __name__ == '__main__':
     # Initialize variables
-    sta_type = StationType.IMT_BS
+    sta_type = StationType.RLAN_AP
     p_tx = 25.1
     freq = 43000
     band = 200
     
     # Create mask
-    msk = SpectralMaskImt(sta_type,freq,band)
+    msk = SpectralMaskRlan(sta_type,freq,band)
     msk.set_mask(p_tx)
     
     # Frequencies

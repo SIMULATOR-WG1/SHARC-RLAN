@@ -43,21 +43,21 @@ class TopologySingleBaseStation(Topology):
         """
         Defines the coordinates of the base stations.
         """
-        if not self.static_base_stations:
-            self.static_base_stations = True
+        if not self.static_access_points:
+            self.static_access_points = True
             if self.num_clusters == 1:
                 self.x = np.array([0])
                 self.y = np.array([0])
                 self.azimuth = TopologySingleBaseStation.AZIMUTH[0]*np.ones(1)
                 self.elevation = TopologySingleBaseStation.ELEVATION*np.ones(1)
-                self.num_base_stations = 1
+                self.num_access_points = 1
             elif self.num_clusters == 2:
                 self.x = np.array([0, self.intersite_distance])
                 self.y = np.array([0, 0])
                 self.azimuth = np.array(TopologySingleBaseStation.AZIMUTH)
                 self.elevation = TopologySingleBaseStation.ELEVATION*np.ones(2)
-                self.num_base_stations = 2
-            self.indoor = np.zeros(self.num_base_stations, dtype = bool)
+                self.num_access_points = 2
+            self.indoor = np.zeros(self.num_access_points, dtype = bool)
 
 
     def plot(self, ax: matplotlib.axes.Axes):

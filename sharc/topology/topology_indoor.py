@@ -45,14 +45,14 @@ class TopologyIndoor(Topology):
         self.building_class = param.building_class
         self.num_cells = param.num_cells
         self.num_floors = param.num_floors
-        if param.num_imt_buildings == 'ALL':
+        if param.num_rlan_buildings == 'ALL':
             self.all_buildings = True
-            self.num_imt_buildings = self.n_rows*self.n_colums
+            self.num_rlan_buildings = self.n_rows*self.n_colums
         else:
             self.all_buildings = False
-            self.num_imt_buildings = int(param.num_imt_buildings)
-        self.imt_buildings = list()
-        self.total_bs_level = self.num_imt_buildings*self.num_cells
+            self.num_rlan_buildings = int(param.num_rlan_buildings)
+        self.rlan_buildings = list()
+        self.total_bs_level = self.num_rlan_buildings*self.num_cells
         
         self.height = np.empty(0)
         
@@ -62,11 +62,11 @@ class TopologyIndoor(Topology):
         Calculates the coordinates of the stations according to the inter-site
         distance parameter. This method is invoked in all snapshots but it can 
         be called only once for the indoor topology. So we set 
-        static_base_stations to True to avoid unnecessary calculations.
+        static_access_points to True to avoid unnecessary calculations.
         """
-        if not self.static_base_stations:
+        if not self.static_access_points:
             self.reset()
-            self.static_base_stations = self.all_buildings
+            self.static_access_points = self.all_buildings
             
             x_base = np.array([ (2*k + 1)*self.cell_radius for k in range(self.num_cells)])
             y_base = self.b_d/2*np.ones(self.num_cells)
@@ -74,11 +74,11 @@ class TopologyIndoor(Topology):
             # Choose random buildings
             all_buildings = list(product(range(self.n_rows),range(self.n_colums)))
             random_number_gen.shuffle(all_buildings)
-            self.imt_buildings = all_buildings[:self.num_imt_buildings]
+            self.rlan_buildings = all_buildings[:self.num_rlan_buildings]
             
             floor_x = np.empty(0)
             floor_y = np.empty(0)
-            for build in self.imt_buildings:
+            for build in self.rlan_buildings:
                 r = build[0]
                 c = build[1]
                 floor_x = np.concatenate((floor_x, x_base + c*(self.b_w + self.street_width)))
@@ -91,11 +91,11 @@ class TopologyIndoor(Topology):
                                              (f+1)*self.b_h*np.ones_like(floor_x)))
 
             # In the end, we have to update the number of base stations
-            self.num_base_stations = len(self.x)        
+            self.num_access_points = len(self.x)        
 
-            self.azimuth = np.zeros(self.num_base_stations)
-            self.elevation = -90*np.ones(self.num_base_stations)
-            self.indoor = np.ones(self.num_base_stations, dtype = bool)
+            self.azimuth = np.zeros(self.num_access_points)
+            self.elevation = -90*np.ones(self.num_access_points)
+            self.indoor = np.ones(self.num_access_points, dtype = bool)
             
     def reset(self):
         self.x = np.empty(0)
@@ -104,8 +104,8 @@ class TopologyIndoor(Topology):
         self.azimuth = np.empty(0)
         self.elevation = np.empty(0)
         self.indoor = np.empty(0)
-        self.num_base_stations = -1
-        self.static_base_stations = False
+        self.num_access_points = -1
+        self.static_access_points = False
     
     def plot(self, ax: matplotlib.axes.Axes, top_view = True):
         if top_view:
@@ -115,7 +115,7 @@ class TopologyIndoor(Topology):
     
     def plot_top_view(self, ax: matplotlib.axes.Axes):
         # create the building
-        for b in range(int(self.num_base_stations/self.num_cells)):
+        for b in range(int(self.num_access_points/self.num_cells)):
             x_b = self.x[self.num_cells*b] - self.cell_radius
             y_b = self.y[self.num_cells*b] - self.b_d/2
             points = list([[x_b, y_b],
@@ -155,7 +155,7 @@ class TopologyIndoor(Topology):
         
         # Loop on each floor of each column of buildings
         for f in range(int(self.num_floors)):
-            for build in self.imt_buildings:
+            for build in self.rlan_buildings:
                 c = build[1]
                 x_b = self.x[f*self.total_bs_level + c*self.num_cells]  - self.cell_radius 
                 z_b = self.height[f*self.total_bs_level + c*self.num_cells]
@@ -173,7 +173,7 @@ if __name__ == '__main__':
     param.intersite_distance = 20
     param.n_rows = 5
     param.n_colums = 5
-    param.num_imt_buildings = 5
+    param.num_rlan_buildings = 5
     param.num_floors = 3
     param.street_width = 30
     param.intersite_distance = 20

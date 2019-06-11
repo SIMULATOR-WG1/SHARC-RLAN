@@ -9,9 +9,9 @@ Created on Fri Apr 14 14:13:58 2017
 from sharc.support.named_tuples import AntennaPar
 import numpy as np
 
-class AntennaElementImtConst(object):
+class AntennaElementRlanConst(object):
     """
-    Implements a single element of an IMT antenna array with constant gain
+    Implements a single element of an RLAN antenna array with constant gain
 
     Attributes
     ----------
@@ -21,11 +21,11 @@ class AntennaElementImtConst(object):
 
     def __init__(self,par: AntennaPar):
         """
-        Constructs an AntennaElementImt object.
+        Constructs an AntennaElementRlan object.
 
         Parameters
         ---------
-            param (ParametersAntennaImt): antenna IMT parameters
+            param (ParametersAntennaRlan): antenna RLAN parameters
         """
         self.g_max = par.element_max_g
 

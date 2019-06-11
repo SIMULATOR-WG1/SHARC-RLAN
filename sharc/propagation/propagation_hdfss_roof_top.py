@@ -19,7 +19,7 @@ from sharc.support.enumerations import StationType
 class PropagationHDFSSRoofTop(Propagation):
     """
     This is a wrapper class which can be used for indoor simulations. It
-    calculates the basic path loss between IMT stations and HDFSS Earth Stations.
+    calculates the basic path loss between RLAN stations and HDFSS Earth Stations.
     It uses:
         FSPL for distance < 55m
         P.1411 LOS for distances 55m < distance < 260m
@@ -74,19 +74,19 @@ class PropagationHDFSSRoofTop(Propagation):
             d = kwargs["distance_2D"]
             
         elevation = np.transpose(kwargs["elevation"])
-        imt_sta_type = kwargs["imt_sta_type"]
+        rlan_sta_type = kwargs["rlan_sta_type"]
         f = kwargs["frequency"]
         number_of_sectors = kwargs.pop("number_of_sectors",1)
         
-        imt_x = kwargs['imt_x']
-        imt_y = kwargs['imt_y']
-        imt_z = kwargs['imt_z']
+        rlan_x = kwargs['rlan_x']
+        rlan_y = kwargs['rlan_y']
+        rlan_z = kwargs['rlan_z']
         es_x = kwargs["es_x"]
         es_y = kwargs["es_y"]
         es_z = kwargs["es_z"]
         
         # Define which stations are on the same building
-        same_build = self.is_same_building(imt_x,imt_y,
+        same_build = self.is_same_building(rlan_x,rlan_y,
                                            es_x, es_y)
         not_same_build = np.logical_not(same_build)
         
@@ -118,7 +118,7 @@ class PropagationHDFSSRoofTop(Propagation):
         if not self.param.same_building_enabled:
             loss[:,same_build_idx] += self.HIGH_LOSS
         else:
-            loss[:,same_build_idx] += self.get_same_build_loss(imt_z[same_build_idx],
+            loss[:,same_build_idx] += self.get_same_build_loss(rlan_z[same_build_idx],
                                                                es_z)
         
         loss[:,fspl_idx] += self.propagation_fspl.get_loss(distance_3D=d[:,fspl_idx],
@@ -141,7 +141,7 @@ class PropagationHDFSSRoofTop(Propagation):
         # Building entry loss
         if self.param.building_loss_enabled:
             build_loss = np.zeros_like(loss)
-            build_loss[0,not_same_build] = self.get_building_loss(imt_sta_type,
+            build_loss[0,not_same_build] = self.get_building_loss(rlan_sta_type,
                                                                   f[:,not_same_build],
                                                                   elevation[:,not_same_build])
         else:
@@ -150,7 +150,7 @@ class PropagationHDFSSRoofTop(Propagation):
         # Diffraction loss
         diff_loss = np.zeros_like(loss)
         if self.param.diffraction_enabled:
-            h, d1, d2 = self.get_diff_distances(imt_x,imt_y, imt_z, 
+            h, d1, d2 = self.get_diff_distances(rlan_x,rlan_y, rlan_z, 
                                                  es_x, es_y,  es_z)
             diff_loss = np.zeros_like(loss)
             diff_loss[0,not_same_build] = self.get_diffraction_loss(h[not_same_build],
@@ -201,43 +201,43 @@ class PropagationHDFSSRoofTop(Propagation):
             
         return loss
     
-    def get_building_loss(self,imt_sta_type,f,elevation):
-        if imt_sta_type is StationType.IMT_UE:
+    def get_building_loss(self,rlan_sta_type,f,elevation):
+        if rlan_sta_type is StationType.RLAN_UE:
             build_loss = self.building_entry.get_loss(f, elevation)
-        elif imt_sta_type is StationType.IMT_BS:
-            if self.param.bs_building_entry_loss_type == 'P2109_RANDOM':
+        elif rlan_sta_type is StationType.RLAN_AP:
+            if self.param.ap_building_entry_loss_type == 'P2109_RANDOM':
                 build_loss = self.building_entry.get_loss(f, elevation)
-            elif self.param.bs_building_entry_loss_type == 'P2109_FIXED':
-                build_loss = self.building_entry.get_loss(f, elevation, prob=self.param.bs_building_entry_loss_prob)
-            elif self.param.bs_building_entry_loss_type == 'FIXED_VALUE':
-                build_loss = self.param.bs_building_entry_loss_value
+            elif self.param.ap_building_entry_loss_type == 'P2109_FIXED':
+                build_loss = self.building_entry.get_loss(f, elevation, prob=self.param.ap_building_entry_loss_prob)
+            elif self.param.ap_building_entry_loss_type == 'FIXED_VALUE':
+                build_loss = self.param.ap_building_entry_loss_value
             else:
                 sys.stderr.write("ERROR\nBuilding entry loss type: " + 
-                                 self.param.bs_building_entry_loss_type)
+                                 self.param.ap_building_entry_loss_type)
                 sys.exit(1)
                 
         return build_loss
     
-    def is_same_building(self,imt_x,imt_y, es_x, es_y):
+    def is_same_building(self,rlan_x,rlan_y, es_x, es_y):
         
         building_x_range = es_x + (1 + self.b_tol)*np.array([-self.b_w/2,+self.b_w/2])
         building_y_range = es_y + (1 + self.b_tol)*np.array([-self.b_d/2,+self.b_d/2])
         
-        is_in_x = np.logical_and(imt_x >= building_x_range[0],imt_x <= building_x_range[1])
-        is_in_y = np.logical_and(imt_y >= building_y_range[0],imt_y <= building_y_range[1])
+        is_in_x = np.logical_and(rlan_x >= building_x_range[0],rlan_x <= building_x_range[1])
+        is_in_y = np.logical_and(rlan_y >= building_y_range[0],rlan_y <= building_y_range[1])
         
         is_in_building = np.logical_and(is_in_x,is_in_y)
         
         return is_in_building
     
-    def get_same_build_loss(self,imt_z,es_z):
-        floor_number = np.floor_divide((es_z - imt_z),3) + 1
+    def get_same_build_loss(self,rlan_z,es_z):
+        floor_number = np.floor_divide((es_z - rlan_z),3) + 1
         
         loss = self.LOSS_PER_FLOOR*floor_number
         
         return loss
     
-    def get_diff_distances(self,imt_x,imt_y, imt_z, es_x, es_y, es_z, dist_2D=False):
+    def get_diff_distances(self,rlan_x,rlan_y, rlan_z, es_x, es_y, es_z, dist_2D=False):
         
         build_poly = Polygon([[es_x + self.b_w/2, es_y + self.b_d/2],
                               [es_x - self.b_w/2, es_y + self.b_d/2],
@@ -245,27 +245,27 @@ class PropagationHDFSSRoofTop(Propagation):
                               [es_x + self.b_w/2, es_y - self.b_d/2]])
         es_point = Point([es_x,es_y])
         
-        d1_2D = np.zeros_like(imt_x)
-        d2_2D = np.zeros_like(imt_x)
-        dist = np.zeros_like(imt_x)
-        for k,(x,y) in enumerate(zip(imt_x,imt_y)):
+        d1_2D = np.zeros_like(rlan_x)
+        d2_2D = np.zeros_like(rlan_x)
+        dist = np.zeros_like(rlan_x)
+        for k,(x,y) in enumerate(zip(rlan_x,rlan_y)):
             line = LineString([[es_x,es_y],[x,y]])
             intersection_line = line.intersection(build_poly)
             d1_2D[k] = intersection_line.length
             
-            imt_point = Point([x,y])
-            dist[k] = es_point.distance(imt_point)
+            rlan_point = Point([x,y])
+            dist[k] = es_point.distance(rlan_point)
             d2_2D[k] = dist[k] - d1_2D[k]
             
         if dist_2D:
             return d1_2D, d2_2D
         
         build_height = es_z - 1
-        z_in_build = imt_z + (es_z - imt_z)*d2_2D/dist
+        z_in_build = rlan_z + (es_z - rlan_z)*d2_2D/dist
         h = build_height - z_in_build
         
         d1 = np.sqrt(1**2 + np.power(d1_2D,2))
-        d2 = np.sqrt(np.power((build_height - imt_z),2) + np.power(d2_2D,2))
+        d2 = np.sqrt(np.power((build_height - rlan_z),2) + np.power(d2_2D,2))
         
         return h, d1, d2
     
@@ -292,28 +292,28 @@ if __name__ == '__main__':
     par.building_loss_enabled = False
     par.shadow_enabled = False
     par.same_building_enabled = True
-    par.bs_building_entry_loss_type = 'FIXED_VALUE'
-    par.bs_building_entry_loss_prob = 0.5
-    par.bs_building_entry_loss_value = 50
+    par.ap_building_entry_loss_type = 'FIXED_VALUE'
+    par.ap_building_entry_loss_prob = 0.5
+    par.ap_building_entry_loss_value = 50
     prop = PropagationHDFSS(par,rnd)
     
     d = np.linspace(5,1000,num=2000)
     d = np.array([list(d)])
     f = 40e3*np.ones_like(d)
     ele = np.transpose(np.zeros_like(d))
-    sta_type = StationType.IMT_BS
+    sta_type = StationType.RLAN_AP
         
     # Without shadow
     loss_interp = prop.get_loss(distance_3D=d,
                          frequency=f,
                          elevation=ele,
-                         imt_sta_type=sta_type)
+                         rlan_sta_type=sta_type)
     prop.fspl_dist = prop.fspl_to_los_dist
     prop.los_dist = prop.los_to_nlos_dist
     loss_no_interp = prop.get_loss(distance_3D=d,
                                    frequency=f,
                                    elevation=ele,
-                                   imt_sta_type=sta_type)
+                                   rlan_sta_type=sta_type)
     
     ravel_d = np.ravel(d)
     ravel_loss_interp = np.ravel(loss_interp)
@@ -332,7 +332,7 @@ if __name__ == '__main__':
     loss = prop.get_loss(distance_3D=d,
                          frequency=f,
                          elevation=ele,
-                         imt_sta_type=sta_type)
+                         rlan_sta_type=sta_type)
     
     ravel_loss = np.ravel(loss)
     plt.plot(ravel_d,ravel_loss)
