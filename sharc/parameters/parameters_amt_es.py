@@ -5,7 +5,7 @@ Created on Mon Jul 24 15:30:49 2017
 @author: edgar
 """
 
-class ParametersAmtEmbraer(object):
+class ParametersAmtEs(object):
     """
     Simulation parameters for FSS Earth Station.
     """

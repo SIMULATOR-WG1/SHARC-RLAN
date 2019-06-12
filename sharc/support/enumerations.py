@@ -38,4 +38,4 @@ class StationType(Enum):
     HAPS   = 6  # HAPS (airbone) station
     RNS    = 7  # Radionavigation service
     RAS    = 8  # Radio Astronomy Service
-    AMT_EMBRAER = 9  # AMT Embraer Station
+    AMT_ES = 9  # AMT Earth Station
