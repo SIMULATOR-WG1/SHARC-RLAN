@@ -35,8 +35,10 @@ class Simulation(ABC, Observable):
             self.param_system = self.parameters.fss_ss
         elif self.parameters.general.system == "FSS_ES":
             self.param_system = self.parameters.fss_es
-        elif self.parameters.general.system == "AMT_ES":
-            self.param_system = self.parameters.amt_es
+        elif self.parameters.general.system == "AMT_GS":
+            self.param_system = self.parameters.amt_gs
+        elif self.parameters.general.system == "RDR_GS":
+            self.param_system = self.parameters.rdr_gs
         elif self.parameters.general.system == "FS":
             self.param_system = self.parameters.fs
         elif self.parameters.general.system == "HAPS":
@@ -187,14 +189,16 @@ class Simulation(ABC, Observable):
             elevation_angles = np.transpose(station_b.get_elevation(station_a))
         elif station_a.station_type is StationType.FSS_ES or \
             station_a.station_type is StationType.RAS or \
-            station_a.station_type is StationType.AMT_ES:
+            station_a.station_type is StationType.RDR_GS or \
+            station_a.station_type is StationType.AMT_GS:
             elevation_angles = station_b.get_elevation(station_a)
         else:
             elevation_angles = None
 
         if station_a.station_type is StationType.FSS_SS or \
            station_a.station_type is StationType.FSS_ES or \
-           station_a.station_type is StationType.AMT_ES or \
+           station_a.station_type is StationType.AMT_GS or \
+           station_a.station_type is StationType.RDR_GS or \
            station_a.station_type is StationType.HAPS or \
            station_a.station_type is StationType.FS or \
            station_a.station_type is StationType.RNS or \
@@ -362,7 +366,8 @@ class Simulation(ABC, Observable):
                 beams_idx = self.ap_to_ue_beam_rbs[station_2_active]
             elif(station_2.station_type is StationType.FSS_SS or \
                  station_2.station_type is StationType.FSS_ES or \
-                 station_2.station_type is StationType.AMT_ES or \
+                 station_2.station_type is StationType.AMT_GS or \
+                 station_2.station_type is StationType.RDR_GS or \
                  station_2.station_type is StationType.HAPS or \
                  station_2.station_type is StationType.FS or \
                  station_2.station_type is StationType.RNS or \
@@ -378,7 +383,8 @@ class Simulation(ABC, Observable):
 
         elif(station_1.station_type is StationType.FSS_SS or \
              station_1.station_type is StationType.FSS_ES or \
-             station_1.station_type is StationType.AMT_ES or \
+             station_1.station_type is StationType.AMT_GS or \
+             station_1.station_type is StationType.RDR_GS or \
              station_1.station_type is StationType.HAPS or \
              station_1.station_type is StationType.FS or \
              station_1.station_type is StationType.RNS or \
@@ -390,7 +396,8 @@ class Simulation(ABC, Observable):
         gains = np.zeros(phi.shape)
         if (station_1.station_type is StationType.RLAN_AP and station_2.station_type is StationType.FSS_SS) or \
            (station_1.station_type is StationType.RLAN_AP and station_2.station_type is StationType.FSS_ES) or \
-           (station_1.station_type is StationType.RLAN_AP and station_2.station_type is StationType.AMT_ES) or \
+           (station_1.station_type is StationType.RLAN_AP and station_2.station_type is StationType.AMT_GS) or \
+           (station_1.station_type is StationType.RLAN_AP and station_2.station_type is StationType.RDR_GS) or \
            (station_1.station_type is StationType.RLAN_AP and station_2.station_type is StationType.HAPS) or \
            (station_1.station_type is StationType.RLAN_AP and station_2.station_type is StationType.FS) or \
            (station_1.station_type is StationType.RLAN_AP and station_2.station_type is StationType.RNS) or \
@@ -404,7 +411,8 @@ class Simulation(ABC, Observable):
 
         elif (station_1.station_type is StationType.RLAN_UE and station_2.station_type is StationType.FSS_SS) or \
              (station_1.station_type is StationType.RLAN_UE and station_2.station_type is StationType.FSS_ES) or \
-             (station_1.station_type is StationType.RLAN_UE and station_2.station_type is StationType.AMT_ES) or \
+             (station_1.station_type is StationType.RLAN_UE and station_2.station_type is StationType.AMT_GS) or \
+             (station_1.station_type is StationType.RLAN_UE and station_2.station_type is StationType.RDR_GS) or \
              (station_1.station_type is StationType.RLAN_UE and station_2.station_type is StationType.HAPS) or \
              (station_1.station_type is StationType.RLAN_UE and station_2.station_type is StationType.FS) or \
              (station_1.station_type is StationType.RLAN_UE and station_2.station_type is StationType.RNS) or \
@@ -421,7 +429,8 @@ class Simulation(ABC, Observable):
 
         elif station_1.station_type is StationType.FSS_SS or \
              station_1.station_type is StationType.FSS_ES or \
-             station_1.station_type is StationType.AMT_ES or \
+             station_1.station_type is StationType.AMT_GS or \
+             station_1.station_type is StationType.RDR_GS or \
              station_1.station_type is StationType.HAPS or \
              station_1.station_type is StationType.FS or \
              station_1.station_type is StationType.RAS:

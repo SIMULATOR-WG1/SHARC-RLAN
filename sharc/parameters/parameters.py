@@ -15,7 +15,8 @@ from sharc.parameters.parameters_antenna_rlan import ParametersAntennaRlan
 from sharc.parameters.parameters_fs import ParametersFs
 from sharc.parameters.parameters_fss_ss import ParametersFssSs
 from sharc.parameters.parameters_fss_es import ParametersFssEs
-from sharc.parameters.parameters_amt_es import ParametersAmtEs
+from sharc.parameters.parameters_amt_gs import ParametersAmtGs
+from sharc.parameters.parameters_rdr_gs import ParametersRdrGs
 from sharc.parameters.parameters_haps import ParametersHaps
 from sharc.parameters.parameters_rns import ParametersRns
 from sharc.parameters.parameters_ras import ParametersRas
@@ -37,10 +38,12 @@ class Parameters(object):
         self.fs = ParametersFs()
         self.fss_ss = ParametersFssSs()
         self.fss_es = ParametersFssEs()
-        self.amt_es = ParametersAmtEs()
+        self.amt_gs = ParametersAmtGs()
         self.haps = ParametersHaps()
         self.rns = ParametersRns()
         self.ras = ParametersRas()
+        self.rdr_gs = ParametersRdrGs()
+        
 
 
     def set_file_name(self, file_name: str):
@@ -366,54 +369,106 @@ class Parameters(object):
         self.ras.clutter_loss = config.getboolean("RAS", "clutter_loss")
 
         #######################################################################
-        # AMT Embraer station
+        # AMT Ground station
         #######################################################################
-        self.amt_es.location = config.get("AMT_ES", "location")
-        self.amt_es.x = config.getfloat("AMT_ES", "x")
-        self.amt_es.y = config.getfloat("AMT_ES", "y")
-        self.amt_es.min_dist_to_ap = config.getfloat("AMT_ES", "min_dist_to_ap")
-        self.amt_es.max_dist_to_ap = config.getfloat("AMT_ES", "max_dist_to_ap")
-        self.amt_es.height = config.getfloat("AMT_ES", "height")
-        self.amt_es.elevation_min = config.getfloat("AMT_ES", "elevation_min")
-        self.amt_es.elevation_max = config.getfloat("AMT_ES", "elevation_max")
-        self.amt_es.azimuth = config.get("AMT_ES", "azimuth")
-        self.amt_es.frequency = config.getfloat("AMT_ES", "frequency")
-        self.amt_es.bandwidth = config.getfloat("AMT_ES", "bandwidth")
-        self.amt_es.adjacent_ch_selectivity = config.getfloat("AMT_ES", "adjacent_ch_selectivity")
-        self.amt_es.tx_power_density = config.getfloat("AMT_ES", "tx_power_density")
-        self.amt_es.noise_temperature = config.getfloat("AMT_ES", "noise_temperature")
-        self.amt_es.inr_scaling = config.getfloat("AMT_ES", "inr_scaling")
-        self.amt_es.antenna_gain = config.getfloat("AMT_ES", "antenna_gain")
-        self.amt_es.antenna_pattern = config.get("AMT_ES", "antenna_pattern")
-        self.amt_es.antenna_envelope_gain = config.getfloat("AMT_ES", "antenna_envelope_gain")
-        self.amt_es.diameter = config.getfloat("AMT_ES", "diameter")
-        self.amt_es.channel_model = config.get("AMT_ES", "channel_model")
-        self.amt_es.line_of_sight_prob = config.getfloat("AMT_ES", "line_of_sight_prob")
-        self.amt_es.BOLTZMANN_CONSTANT = config.getfloat("AMT_ES", "BOLTZMANN_CONSTANT")
-        self.amt_es.EARTH_RADIUS = config.getfloat("AMT_ES", "EARTH_RADIUS")
+        self.amt_gs.location = config.get("AMT_GS", "location")
+        self.amt_gs.x = config.getfloat("AMT_GS", "x")
+        self.amt_gs.y = config.getfloat("AMT_GS", "y")
+        self.amt_gs.min_dist_to_ap = config.getfloat("AMT_GS", "min_dist_to_ap")
+        self.amt_gs.max_dist_to_ap = config.getfloat("AMT_GS", "max_dist_to_ap")
+        self.amt_gs.height = config.getfloat("AMT_GS", "height")
+        self.amt_gs.elevation_min = config.getfloat("AMT_GS", "elevation_min")
+        self.amt_gs.elevation_max = config.getfloat("AMT_GS", "elevation_max")
+        self.amt_gs.azimuth = config.get("AMT_GS", "azimuth")
+        self.amt_gs.frequency = config.getfloat("AMT_GS", "frequency")
+        self.amt_gs.bandwidth = config.getfloat("AMT_GS", "bandwidth")
+        self.amt_gs.adjacent_ch_selectivity = config.getfloat("AMT_GS", "adjacent_ch_selectivity")
+        self.amt_gs.tx_power_density = config.getfloat("AMT_GS", "tx_power_density")
+        self.amt_gs.noise_temperature = config.getfloat("AMT_GS", "noise_temperature")
+        self.amt_gs.inr_scaling = config.getfloat("AMT_GS", "inr_scaling")
+        self.amt_gs.antenna_gain = config.getfloat("AMT_GS", "antenna_gain")
+        self.amt_gs.antenna_pattern = config.get("AMT_GS", "antenna_pattern")
+        self.amt_gs.antenna_envelope_gain = config.getfloat("AMT_GS", "antenna_envelope_gain")
+        self.amt_gs.diameter = config.getfloat("AMT_GS", "diameter")
+        self.amt_gs.channel_model = config.get("AMT_GS", "channel_model")
+        self.amt_gs.line_of_sight_prob = config.getfloat("AMT_GS", "line_of_sight_prob")
+        self.amt_gs.BOLTZMANN_CONSTANT = config.getfloat("AMT_GS", "BOLTZMANN_CONSTANT")
+        self.amt_gs.EARTH_RADIUS = config.getfloat("AMT_GS", "EARTH_RADIUS")
 
         # P452 parameters
-        self.amt_es.atmospheric_pressure = config.getfloat("AMT_ES", "atmospheric_pressure")
-        self.amt_es.air_temperature = config.getfloat("AMT_ES", "air_temperature")
-        self.amt_es.N0 = config.getfloat("AMT_ES", "N0")
-        self.amt_es.delta_N = config.getfloat("AMT_ES", "delta_N")
-        self.amt_es.percentage_p = config.get("AMT_ES", "percentage_p")
-        self.amt_es.Dct = config.getfloat("AMT_ES", "Dct")
-        self.amt_es.Dcr = config.getfloat("AMT_ES", "Dcr")
-        self.amt_es.Hte = config.getfloat("AMT_ES", "Hte")
-        self.amt_es.Hre = config.getfloat("AMT_ES", "Hre")
-        self.amt_es.tx_lat = config.getfloat("AMT_ES", "tx_lat")
-        self.amt_es.rx_lat = config.getfloat("AMT_ES", "rx_lat")
-        self.amt_es.polarization = config.get("AMT_ES", "polarization")
-        self.amt_es.clutter_loss = config.getboolean("AMT_ES", "clutter_loss")
+        self.amt_gs.atmospheric_pressure = config.getfloat("AMT_GS", "atmospheric_pressure")
+        self.amt_gs.air_temperature = config.getfloat("AMT_GS", "air_temperature")
+        self.amt_gs.N0 = config.getfloat("AMT_GS", "N0")
+        self.amt_gs.delta_N = config.getfloat("AMT_GS", "delta_N")
+        self.amt_gs.percentage_p = config.get("AMT_GS", "percentage_p")
+        self.amt_gs.Dct = config.getfloat("AMT_GS", "Dct")
+        self.amt_gs.Dcr = config.getfloat("AMT_GS", "Dcr")
+        self.amt_gs.Hte = config.getfloat("AMT_GS", "Hte")
+        self.amt_gs.Hre = config.getfloat("AMT_GS", "Hre")
+        self.amt_gs.tx_lat = config.getfloat("AMT_GS", "tx_lat")
+        self.amt_gs.rx_lat = config.getfloat("AMT_GS", "rx_lat")
+        self.amt_gs.polarization = config.get("AMT_GS", "polarization")
+        self.amt_gs.clutter_loss = config.getboolean("AMT_GS", "clutter_loss")
         
-        # HDFSS propagation parameters
-        self.amt_es.es_position = config.get("AMT_ES", "es_position")
-        self.amt_es.shadow_enabled = config.getboolean("AMT_ES", "shadow_enabled")
-        self.amt_es.building_loss_enabled = config.getboolean("AMT_ES", "building_loss_enabled")
-        self.amt_es.same_building_enabled = config.getboolean("AMT_ES", "same_building_enabled")
-        self.amt_es.diffraction_enabled = config.getboolean("AMT_ES", "diffraction_enabled")
-        self.amt_es.ap_building_entry_loss_type = config.get("AMT_ES", "ap_building_entry_loss_type")
-        self.amt_es.ap_building_entry_loss_prob = config.getfloat("AMT_ES", "ap_building_entry_loss_prob")
-        self.amt_es.ap_building_entry_loss_value = config.getfloat("AMT_ES", "ap_building_entry_loss_value")
+        # RADAR for indoor interference propagation parameters
+        self.amt_gs.es_position = config.get("AMT_GS", "es_position")
+        self.amt_gs.shadow_enabled = config.getboolean("AMT_GS", "shadow_enabled")
+        self.amt_gs.building_loss_enabled = config.getboolean("AMT_GS", "building_loss_enabled")
+        self.amt_gs.same_building_enabled = config.getboolean("AMT_GS", "same_building_enabled")
+        self.amt_gs.diffraction_enabled = config.getboolean("AMT_GS", "diffraction_enabled")
+        self.amt_gs.ap_building_entry_loss_type = config.get("AMT_GS", "ap_building_entry_loss_type")
+        self.amt_gs.ap_building_entry_loss_prob = config.getfloat("AMT_GS", "ap_building_entry_loss_prob")
+        self.amt_gs.ap_building_entry_loss_value = config.getfloat("AMT_GS", "ap_building_entry_loss_value")
+
+        #######################################################################
+        # RADAR Ground station
+        #######################################################################
+        self.rdr_gs.location = config.get("RDR_GS", "location")
+        self.rdr_gs.x = config.getfloat("RDR_GS", "x")
+        self.rdr_gs.y = config.getfloat("RDR_GS", "y")
+        self.rdr_gs.min_dist_to_ap = config.getfloat("RDR_GS", "min_dist_to_ap")
+        self.rdr_gs.max_dist_to_ap = config.getfloat("RDR_GS", "max_dist_to_ap")
+        self.rdr_gs.height = config.getfloat("RDR_GS", "height")
+        self.rdr_gs.elevation_min = config.getfloat("RDR_GS", "elevation_min")
+        self.rdr_gs.elevation_max = config.getfloat("RDR_GS", "elevation_max")
+        self.rdr_gs.azimuth = config.get("RDR_GS", "azimuth")
+        self.rdr_gs.frequency = config.getfloat("RDR_GS", "frequency")
+        self.rdr_gs.bandwidth = config.getfloat("RDR_GS", "bandwidth")
+        self.rdr_gs.adjacent_ch_selectivity = config.getfloat("RDR_GS", "adjacent_ch_selectivity")
+        self.rdr_gs.tx_power_density = config.getfloat("RDR_GS", "tx_power_density")
+        self.rdr_gs.noise_temperature = config.getfloat("RDR_GS", "noise_temperature")
+        self.rdr_gs.inr_scaling = config.getfloat("RDR_GS", "inr_scaling")
+        self.rdr_gs.antenna_gain = config.getfloat("RDR_GS", "antenna_gain")
+        self.rdr_gs.antenna_pattern = config.get("RDR_GS", "antenna_pattern")
+        self.rdr_gs.antenna_envelope_gain = config.getfloat("RDR_GS", "antenna_envelope_gain")
+        self.rdr_gs.diameter = config.getfloat("RDR_GS", "diameter")
+        self.rdr_gs.channel_model = config.get("RDR_GS", "channel_model")
+        self.rdr_gs.line_of_sight_prob = config.getfloat("RDR_GS", "line_of_sight_prob")
+        self.rdr_gs.BOLTZMANN_CONSTANT = config.getfloat("RDR_GS", "BOLTZMANN_CONSTANT")
+        self.rdr_gs.EARTH_RADIUS = config.getfloat("RDR_GS", "EARTH_RADIUS")
+
+        # P452 parameters
+        self.rdr_gs.atmospheric_pressure = config.getfloat("RDR_GS", "atmospheric_pressure")
+        self.rdr_gs.air_temperature = config.getfloat("RDR_GS", "air_temperature")
+        self.rdr_gs.N0 = config.getfloat("RDR_GS", "N0")
+        self.rdr_gs.delta_N = config.getfloat("RDR_GS", "delta_N")
+        self.rdr_gs.percentage_p = config.get("RDR_GS", "percentage_p")
+        self.rdr_gs.Dct = config.getfloat("RDR_GS", "Dct")
+        self.rdr_gs.Dcr = config.getfloat("RDR_GS", "Dcr")
+        self.rdr_gs.Hte = config.getfloat("RDR_GS", "Hte")
+        self.rdr_gs.Hre = config.getfloat("RDR_GS", "Hre")
+        self.rdr_gs.tx_lat = config.getfloat("RDR_GS", "tx_lat")
+        self.rdr_gs.rx_lat = config.getfloat("RDR_GS", "rx_lat")
+        self.rdr_gs.polarization = config.get("RDR_GS", "polarization")
+        self.rdr_gs.clutter_loss = config.getboolean("RDR_GS", "clutter_loss")
+        
+        # Radar for indoor interference propagation parameters
+        self.rdr_gs.es_position = config.get("RDR_GS", "es_position")
+        self.rdr_gs.shadow_enabled = config.getboolean("RDR_GS", "shadow_enabled")
+        self.rdr_gs.building_loss_enabled = config.getboolean("RDR_GS", "building_loss_enabled")
+        self.rdr_gs.same_building_enabled = config.getboolean("RDR_GS", "same_building_enabled")
+        self.rdr_gs.diffraction_enabled = config.getboolean("RDR_GS", "diffraction_enabled")
+        self.rdr_gs.ap_building_entry_loss_type = config.get("RDR_GS", "ap_building_entry_loss_type")
+        self.rdr_gs.ap_building_entry_loss_prob = config.getfloat("RDR_GS", "ap_building_entry_loss_prob")
+        self.rdr_gs.ap_building_entry_loss_value = config.getfloat("RDR_GS", "ap_building_entry_loss_value")
 

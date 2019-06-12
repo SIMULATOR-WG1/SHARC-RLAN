@@ -16,7 +16,8 @@ from sharc.parameters.parameters_antenna_rlan import ParametersAntennaRlan
 from sharc.parameters.parameters_fs import ParametersFs
 from sharc.parameters.parameters_fss_ss import ParametersFssSs
 from sharc.parameters.parameters_fss_es import ParametersFssEs
-from sharc.parameters.parameters_amt_es import ParametersAmtEs
+from sharc.parameters.parameters_amt_gs import ParametersAmtGs
+from sharc.parameters.parameters_rdr_gs import ParametersRdrGs
 from sharc.parameters.parameters_haps import ParametersHaps
 from sharc.parameters.parameters_rns import ParametersRns
 from sharc.parameters.parameters_ras import ParametersRas
@@ -368,8 +369,10 @@ class StationFactory(object):
     def generate_system(parameters: Parameters, topology: Topology, random_number_gen: np.random.RandomState ):
         if parameters.general.system == "FSS_ES":
             return StationFactory.generate_fss_earth_station(parameters.fss_es, random_number_gen, topology)
-        if parameters.general.system == "AMT_ES":
-            return StationFactory.generate_amt_earth_station(parameters.amt_es, random_number_gen, topology)
+        if parameters.general.system == "AMT_GS":
+            return StationFactory.generate_amt_ground_station(parameters.amt_gs, random_number_gen, topology)
+        if parameters.general.system == "RDR_GS":
+            return StationFactory.generate_amt_ground_station(parameters.rdr_gs, random_number_gen, topology)
         elif parameters.general.system == "FSS_SS":
             return StationFactory.generate_fss_space_station(parameters.fss_ss)
         elif parameters.general.system == "FS":
@@ -514,7 +517,7 @@ class StationFactory(object):
 
     @staticmethod
 
-    def generate_amt_earth_station(param: ParametersAmtEs, random_number_gen: np.random.RandomState, *args):
+    def generate_amt_ground_station(param: ParametersAmtGs, random_number_gen: np.random.RandomState, *args):
         """
         Generates FSS Earth Station.
 
@@ -525,67 +528,140 @@ class StationFactory(object):
         """
         if len(args): topology = args[0]
 
-        amt_earth_station = StationManager(1)
-        amt_earth_station.station_type = StationType.AMT_ES
+        amt_ground_station = StationManager(1)
+        amt_ground_station.station_type = StationType.AMT_GS
 
         if param.location.upper() == "FIXED":
-            amt_earth_station.x = np.array([param.x])
-            amt_earth_station.y = np.array([param.y])
+            amt_ground_station.x = np.array([param.x])
+            amt_ground_station.y = np.array([param.y])
         elif param.location.upper() == "CELL":
             x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
                                                                       param.min_dist_to_ap, True)
-            amt_earth_station.x = np.array(x)
-            amt_earth_station.y = np.array(y)
+            amt_ground_station.x = np.array(x)
+            amt_ground_station.y = np.array(y)
         elif param.location.upper() == "NETWORK":
             x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
                                                                       param.min_dist_to_ap, False)
-            amt_earth_station.x = np.array(x)
-            amt_earth_station.y = np.array(y)
+            amt_ground_station.x = np.array(x)
+            amt_ground_station.y = np.array(y)
         elif param.location.upper() == "UNIFORM_DIST":
             dist = random_number_gen.uniform( param.min_dist_to_ap, param.max_dist_to_ap)
             angle = random_number_gen.uniform(-np.pi, np.pi)
-            amt_earth_station.x[0] = np.array(dist * np.cos(angle))
-            amt_earth_station.y[0] = np.array(dist * np.sin(angle))
+            amt_ground_station.x[0] = np.array(dist * np.cos(angle))
+            amt_ground_station.y[0] = np.array(dist * np.sin(angle))
         else:
             sys.stderr.write("ERROR\nFSS-ES location type {} not supported".format(param.location))
             sys.exit(1)
 
-        amt_earth_station.height = np.array([param.height])
+        amt_ground_station.height = np.array([param.height])
 
         if param.azimuth.upper() == "RANDOM":
-            amt_earth_station.azimuth = random_number_gen.uniform(-180., 180.)
+            amt_ground_station.azimuth = random_number_gen.uniform(-180., 180.)
         else:
-            amt_earth_station.azimuth = float(param.azimuth)
+            amt_ground_station.azimuth = float(param.azimuth)
 
         elevation = random_number_gen.uniform(param.elevation_min, param.elevation_max)
-        amt_earth_station.elevation = np.array([elevation])
+        amt_ground_station.elevation = np.array([elevation])
 
-        amt_earth_station.active = np.array([True])
-        amt_earth_station.tx_power = np.array([param.tx_power_density + 10*math.log10(param.bandwidth*1e6) + 30])
-        amt_earth_station.rx_interference = -500
+        amt_ground_station.active = np.array([True])
+        amt_ground_station.tx_power = np.array([param.tx_power_density + 10*math.log10(param.bandwidth*1e6) + 30])
+        amt_ground_station.rx_interference = -500
 
         if param.antenna_pattern.upper() == "OMNI":
-            amt_earth_station.antenna = np.array([AntennaOmni(param.antenna_gain)])
+            amt_ground_station.antenna = np.array([AntennaOmni(param.antenna_gain)])
         elif param.antenna_pattern.upper() == "ITU-R S.1855":
-            amt_earth_station.antenna = np.array([AntennaS1855(param)])
+            amt_ground_station.antenna = np.array([AntennaS1855(param)])
         elif param.antenna_pattern.upper() == "ITU-R S.465":
-            amt_earth_station.antenna = np.array([AntennaS465(param)])
+            amt_ground_station.antenna = np.array([AntennaS465(param)])
         elif param.antenna_pattern.upper() == "MODIFIED ITU-R S.465":
-            amt_earth_station.antenna = np.array([AntennaModifiedS465(param)])
+            amt_ground_station.antenna = np.array([AntennaModifiedS465(param)])
         elif param.antenna_pattern.upper() == "ITU-R S.580":
-            amt_earth_station.antenna = np.array([AntennaS580(param)])
+            amt_ground_station.antenna = np.array([AntennaS580(param)])
         else:
             sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
             sys.exit(1)
 
-        amt_earth_station.noise_temperature = param.noise_temperature
-        amt_earth_station.bandwidth = np.array([param.bandwidth])
-        amt_earth_station.noise_temperature = param.noise_temperature
-        amt_earth_station.thermal_noise = -500
-        amt_earth_station.total_interference = -500
+        amt_ground_station.noise_temperature = param.noise_temperature
+        amt_ground_station.bandwidth = np.array([param.bandwidth])
+        amt_ground_station.noise_temperature = param.noise_temperature
+        amt_ground_station.thermal_noise = -500
+        amt_ground_station.total_interference = -500
 
-        return amt_earth_station
+        return amt_ground_station
 
+    @staticmethod
+
+    def generate_radar_ground_station(param: ParametersRdrGs, random_number_gen: np.random.RandomState, *args):
+        """
+        Generates FSS Earth Station.
+
+        Arguments:
+            param: ParametersFssEs
+            random_number_gen: np.random.RandomState
+            topology (optional): Topology
+        """
+        if len(args): topology = args[0]
+
+        radar_ground_station = StationManager(1)
+        radar_ground_station.station_type = StationType.AMT_GS
+
+        if param.location.upper() == "FIXED":
+            radar_ground_station.x = np.array([param.x])
+            radar_ground_station.y = np.array([param.y])
+        elif param.location.upper() == "CELL":
+            x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
+                                                                      param.min_dist_to_ap, True)
+            radar_ground_station.x = np.array(x)
+            radar_ground_station.y = np.array(y)
+        elif param.location.upper() == "NETWORK":
+            x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
+                                                                      param.min_dist_to_ap, False)
+            radar_ground_station.x = np.array(x)
+            radar_ground_station.y = np.array(y)
+        elif param.location.upper() == "UNIFORM_DIST":
+            dist = random_number_gen.uniform( param.min_dist_to_ap, param.max_dist_to_ap)
+            angle = random_number_gen.uniform(-np.pi, np.pi)
+            radar_ground_station.x[0] = np.array(dist * np.cos(angle))
+            radar_ground_station.y[0] = np.array(dist * np.sin(angle))
+        else:
+            sys.stderr.write("ERROR\nFSS-ES location type {} not supported".format(param.location))
+            sys.exit(1)
+
+        radar_ground_station.height = np.array([param.height])
+
+        if param.azimuth.upper() == "RANDOM":
+            radar_ground_station.azimuth = random_number_gen.uniform(-180., 180.)
+        else:
+            radar_ground_station.azimuth = float(param.azimuth)
+
+        elevation = random_number_gen.uniform(param.elevation_min, param.elevation_max)
+        radar_ground_station.elevation = np.array([elevation])
+
+        radar_ground_station.active = np.array([True])
+        radar_ground_station.tx_power = np.array([param.tx_power_density + 10*math.log10(param.bandwidth*1e6) + 30])
+        radar_ground_station.rx_interference = -500
+
+        if param.antenna_pattern.upper() == "OMNI":
+            radar_ground_station.antenna = np.array([AntennaOmni(param.antenna_gain)])
+        elif param.antenna_pattern.upper() == "ITU-R S.1855":
+            radar_ground_station.antenna = np.array([AntennaS1855(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.465":
+            radar_ground_station.antenna = np.array([AntennaS465(param)])
+        elif param.antenna_pattern.upper() == "MODIFIED ITU-R S.465":
+            radar_ground_station.antenna = np.array([AntennaModifiedS465(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.580":
+            radar_ground_station.antenna = np.array([AntennaS580(param)])
+        else:
+            sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
+            sys.exit(1)
+
+        radar_ground_station.noise_temperature = param.noise_temperature
+        radar_ground_station.bandwidth = np.array([param.bandwidth])
+        radar_ground_station.noise_temperature = param.noise_temperature
+        radar_ground_station.thermal_noise = -500
+        radar_ground_station.total_interference = -500
+
+        return radar_ground_station
 
     @staticmethod
     def generate_fs_station(param: ParametersFs):
