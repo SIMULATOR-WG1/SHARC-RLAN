@@ -17,6 +17,8 @@ from sharc.parameters.parameters_fss_ss import ParametersFssSs
 from sharc.parameters.parameters_fss_es import ParametersFssEs
 from sharc.parameters.parameters_amt_gs import ParametersAmtGs
 from sharc.parameters.parameters_rdr_gs import ParametersRdrGs
+from sharc.parameters.parameters_amax_bs import ParametersAmaxBs
+from sharc.parameters.parameters_amax_cpe import ParametersAmaxCpe
 from sharc.parameters.parameters_haps import ParametersHaps
 from sharc.parameters.parameters_rns import ParametersRns
 from sharc.parameters.parameters_ras import ParametersRas
@@ -43,7 +45,8 @@ class Parameters(object):
         self.rns = ParametersRns()
         self.ras = ParametersRas()
         self.rdr_gs = ParametersRdrGs()
-        
+        self.amax_bs = ParametersAmaxBs()
+        self.amax_cpe = ParametersAmaxCpe()
 
 
     def set_file_name(self, file_name: str):
@@ -472,3 +475,106 @@ class Parameters(object):
         self.rdr_gs.ap_building_entry_loss_prob = config.getfloat("RDR_GS", "ap_building_entry_loss_prob")
         self.rdr_gs.ap_building_entry_loss_value = config.getfloat("RDR_GS", "ap_building_entry_loss_value")
 
+        #######################################################################
+        # AEROMAX Base station
+        #######################################################################
+        self.amax_bs.location = config.get("AMAX_BS", "location")
+        self.amax_bs.x = config.getfloat("AMAX_BS", "x")
+        self.amax_bs.y = config.getfloat("AMAX_BS", "y")
+        self.amax_bs.min_dist_to_ap = config.getfloat("AMAX_BS", "min_dist_to_ap")
+        self.amax_bs.max_dist_to_ap = config.getfloat("AMAX_BS", "max_dist_to_ap")
+        self.amax_bs.height = config.getfloat("AMAX_BS", "height")
+        self.amax_bs.elevation_min = config.getfloat("AMAX_BS", "elevation_min")
+        self.amax_bs.elevation_max = config.getfloat("AMAX_BS", "elevation_max")
+        self.amax_bs.azimuth = config.get("AMAX_BS", "azimuth")
+        self.amax_bs.frequency = config.getfloat("AMAX_BS", "frequency")
+        self.amax_bs.bandwidth = config.getfloat("AMAX_BS", "bandwidth")
+        self.amax_bs.adjacent_ch_selectivity = config.getfloat("AMAX_BS", "adjacent_ch_selectivity")
+        self.amax_bs.tx_power_density = config.getfloat("AMAX_BS", "tx_power_density")
+        self.amax_bs.noise_temperature = config.getfloat("AMAX_BS", "noise_temperature")
+        self.amax_bs.inr_scaling = config.getfloat("AMAX_BS", "inr_scaling")
+        self.amax_bs.antenna_gain = config.getfloat("AMAX_BS", "antenna_gain")
+        self.amax_bs.antenna_pattern = config.get("AMAX_BS", "antenna_pattern")
+        self.amax_bs.antenna_envelope_gain = config.getfloat("AMAX_BS", "antenna_envelope_gain")
+        self.amax_bs.diameter = config.getfloat("AMAX_BS", "diameter")
+        self.amax_bs.channel_model = config.get("AMAX_BS", "channel_model")
+        self.amax_bs.line_of_sight_prob = config.getfloat("AMAX_BS", "line_of_sight_prob")
+        self.amax_bs.BOLTZMANN_CONSTANT = config.getfloat("AMAX_BS", "BOLTZMANN_CONSTANT")
+        self.amax_bs.EARTH_RADIUS = config.getfloat("AMAX_BS", "EARTH_RADIUS")
+
+        # P452 parameters
+        self.amax_bs.atmospheric_pressure = config.getfloat("AMAX_BS", "atmospheric_pressure")
+        self.amax_bs.air_temperature = config.getfloat("AMAX_BS", "air_temperature")
+        self.amax_bs.N0 = config.getfloat("AMAX_BS", "N0")
+        self.amax_bs.delta_N = config.getfloat("AMAX_BS", "delta_N")
+        self.amax_bs.percentage_p = config.get("AMAX_BS", "percentage_p")
+        self.amax_bs.Dct = config.getfloat("AMAX_BS", "Dct")
+        self.amax_bs.Dcr = config.getfloat("AMAX_BS", "Dcr")
+        self.amax_bs.Hte = config.getfloat("AMAX_BS", "Hte")
+        self.amax_bs.Hre = config.getfloat("AMAX_BS", "Hre")
+        self.amax_bs.tx_lat = config.getfloat("AMAX_BS", "tx_lat")
+        self.amax_bs.rx_lat = config.getfloat("AMAX_BS", "rx_lat")
+        self.amax_bs.polarization = config.get("AMAX_BS", "polarization")
+        self.amax_bs.clutter_loss = config.getboolean("AMAX_BS", "clutter_loss")
+        
+        # Radar for indoor interference propagation parameters
+        self.amax_bs.es_position = config.get("AMAX_BS", "es_position")
+        self.amax_bs.shadow_enabled = config.getboolean("AMAX_BS", "shadow_enabled")
+        self.amax_bs.building_loss_enabled = config.getboolean("AMAX_BS", "building_loss_enabled")
+        self.amax_bs.same_building_enabled = config.getboolean("AMAX_BS", "same_building_enabled")
+        self.amax_bs.diffraction_enabled = config.getboolean("AMAX_BS", "diffraction_enabled")
+        self.amax_bs.ap_building_entry_loss_type = config.get("AMAX_BS", "ap_building_entry_loss_type")
+        self.amax_bs.ap_building_entry_loss_prob = config.getfloat("AMAX_BS", "ap_building_entry_loss_prob")
+        self.amax_bs.ap_building_entry_loss_value = config.getfloat("AMAX_BS", "ap_building_entry_loss_value")
+
+        #######################################################################
+        # AEROMAX CPE station
+        #######################################################################
+        self.amax_cpe.location = config.get("AMAX_CPE", "location")
+        self.amax_cpe.x = config.getfloat("AMAX_CPE", "x")
+        self.amax_cpe.y = config.getfloat("AMAX_CPE", "y")
+        self.amax_cpe.min_dist_to_ap = config.getfloat("AMAX_CPE", "min_dist_to_ap")
+        self.amax_cpe.max_dist_to_ap = config.getfloat("AMAX_CPE", "max_dist_to_ap")
+        self.amax_cpe.height = config.getfloat("AMAX_CPE", "height")
+        self.amax_cpe.elevation_min = config.getfloat("AMAX_CPE", "elevation_min")
+        self.amax_cpe.elevation_max = config.getfloat("AMAX_CPE", "elevation_max")
+        self.amax_cpe.azimuth = config.get("AMAX_CPE", "azimuth")
+        self.amax_cpe.frequency = config.getfloat("AMAX_CPE", "frequency")
+        self.amax_cpe.bandwidth = config.getfloat("AMAX_CPE", "bandwidth")
+        self.amax_cpe.adjacent_ch_selectivity = config.getfloat("AMAX_CPE", "adjacent_ch_selectivity")
+        self.amax_cpe.tx_power_density = config.getfloat("AMAX_CPE", "tx_power_density")
+        self.amax_cpe.noise_temperature = config.getfloat("AMAX_CPE", "noise_temperature")
+        self.amax_cpe.inr_scaling = config.getfloat("AMAX_CPE", "inr_scaling")
+        self.amax_cpe.antenna_gain = config.getfloat("AMAX_CPE", "antenna_gain")
+        self.amax_cpe.antenna_pattern = config.get("AMAX_CPE", "antenna_pattern")
+        self.amax_cpe.antenna_envelope_gain = config.getfloat("AMAX_CPE", "antenna_envelope_gain")
+        self.amax_cpe.diameter = config.getfloat("AMAX_CPE", "diameter")
+        self.amax_cpe.channel_model = config.get("AMAX_CPE", "channel_model")
+        self.amax_cpe.line_of_sight_prob = config.getfloat("AMAX_CPE", "line_of_sight_prob")
+        self.amax_cpe.BOLTZMANN_CONSTANT = config.getfloat("AMAX_CPE", "BOLTZMANN_CONSTANT")
+        self.amax_cpe.EARTH_RADIUS = config.getfloat("AMAX_CPE", "EARTH_RADIUS")
+
+        # P452 parameters
+        self.amax_cpe.atmospheric_pressure = config.getfloat("AMAX_CPE", "atmospheric_pressure")
+        self.amax_cpe.air_temperature = config.getfloat("AMAX_CPE", "air_temperature")
+        self.amax_cpe.N0 = config.getfloat("AMAX_CPE", "N0")
+        self.amax_cpe.delta_N = config.getfloat("AMAX_CPE", "delta_N")
+        self.amax_cpe.percentage_p = config.get("AMAX_CPE", "percentage_p")
+        self.amax_cpe.Dct = config.getfloat("AMAX_CPE", "Dct")
+        self.amax_cpe.Dcr = config.getfloat("AMAX_CPE", "Dcr")
+        self.amax_cpe.Hte = config.getfloat("AMAX_CPE", "Hte")
+        self.amax_cpe.Hre = config.getfloat("AMAX_CPE", "Hre")
+        self.amax_cpe.tx_lat = config.getfloat("AMAX_CPE", "tx_lat")
+        self.amax_cpe.rx_lat = config.getfloat("AMAX_CPE", "rx_lat")
+        self.amax_cpe.polarization = config.get("AMAX_CPE", "polarization")
+        self.amax_cpe.clutter_loss = config.getboolean("AMAX_CPE", "clutter_loss")
+        
+        # Radar for indoor interference propagation parameters
+        self.amax_cpe.es_position = config.get("AMAX_CPE", "es_position")
+        self.amax_cpe.shadow_enabled = config.getboolean("AMAX_CPE", "shadow_enabled")
+        self.amax_cpe.building_loss_enabled = config.getboolean("AMAX_CPE", "building_loss_enabled")
+        self.amax_cpe.same_building_enabled = config.getboolean("AMAX_CPE", "same_building_enabled")
+        self.amax_cpe.diffraction_enabled = config.getboolean("AMAX_CPE", "diffraction_enabled")
+        self.amax_cpe.ap_building_entry_loss_type = config.get("AMAX_CPE", "ap_building_entry_loss_type")
+        self.amax_cpe.ap_building_entry_loss_prob = config.getfloat("AMAX_CPE", "ap_building_entry_loss_prob")
+        self.amax_cpe.ap_building_entry_loss_value = config.getfloat("AMAX_CPE", "ap_building_entry_loss_value")

@@ -40,3 +40,6 @@ class StationType(Enum):
     RAS    = 8  # Radio Astronomy Service
     AMT_GS = 9  # AMT Ground Station
     RDR_GS = 10 # Radar Ground Station
+    AMAX_BS = 11 # Radar Ground Station
+    AMAX_CPE = 12 # Radar Ground Station
+    

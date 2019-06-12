@@ -18,6 +18,8 @@ from sharc.parameters.parameters_fss_ss import ParametersFssSs
 from sharc.parameters.parameters_fss_es import ParametersFssEs
 from sharc.parameters.parameters_amt_gs import ParametersAmtGs
 from sharc.parameters.parameters_rdr_gs import ParametersRdrGs
+from sharc.parameters.parameters_amax_bs import ParametersAmaxBs
+from sharc.parameters.parameters_amax_cpe import ParametersAmaxCpe
 from sharc.parameters.parameters_haps import ParametersHaps
 from sharc.parameters.parameters_rns import ParametersRns
 from sharc.parameters.parameters_ras import ParametersRas
@@ -371,6 +373,10 @@ class StationFactory(object):
             return StationFactory.generate_fss_earth_station(parameters.fss_es, random_number_gen, topology)
         if parameters.general.system == "AMT_GS":
             return StationFactory.generate_amt_ground_station(parameters.amt_gs, random_number_gen, topology)
+        if parameters.general.system == "AMAX_BS":
+            return StationFactory.generate_amt_ground_station(parameters.amax_bs, random_number_gen, topology)
+        if parameters.general.system == "AMAX_CPE":
+            return StationFactory.generate_amt_ground_station(parameters.amax_cpe, random_number_gen, topology)
         if parameters.general.system == "RDR_GS":
             return StationFactory.generate_amt_ground_station(parameters.rdr_gs, random_number_gen, topology)
         elif parameters.general.system == "FSS_SS":
@@ -662,6 +668,153 @@ class StationFactory(object):
         radar_ground_station.total_interference = -500
 
         return radar_ground_station
+
+    @staticmethod
+    def generate_aeromax_base_station(param: ParametersAmaxBs, random_number_gen: np.random.RandomState, *args):
+        """
+        Generates FSS Earth Station.
+
+        Arguments:
+            param: ParametersFssEs
+            random_number_gen: np.random.RandomState
+            topology (optional): Topology
+        """
+        if len(args): topology = args[0]
+
+        aeromax_base_station = StationManager(1)
+        aeromax_base_station.station_type = StationType.AMT_GS
+
+        if param.location.upper() == "FIXED":
+            aeromax_base_station.x = np.array([param.x])
+            aeromax_base_station.y = np.array([param.y])
+        elif param.location.upper() == "CELL":
+            x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
+                                                                      param.min_dist_to_ap, True)
+            aeromax_base_station.x = np.array(x)
+            aeromax_base_station.y = np.array(y)
+        elif param.location.upper() == "NETWORK":
+            x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
+                                                                      param.min_dist_to_ap, False)
+            aeromax_base_station.x = np.array(x)
+            aeromax_base_station.y = np.array(y)
+        elif param.location.upper() == "UNIFORM_DIST":
+            dist = random_number_gen.uniform( param.min_dist_to_ap, param.max_dist_to_ap)
+            angle = random_number_gen.uniform(-np.pi, np.pi)
+            aeromax_base_station.x[0] = np.array(dist * np.cos(angle))
+            aeromax_base_station.y[0] = np.array(dist * np.sin(angle))
+        else:
+            sys.stderr.write("ERROR\nFSS-ES location type {} not supported".format(param.location))
+            sys.exit(1)
+
+        aeromax_base_station.height = np.array([param.height])
+
+        if param.azimuth.upper() == "RANDOM":
+            aeromax_base_station.azimuth = random_number_gen.uniform(-180., 180.)
+        else:
+            aeromax_base_station.azimuth = float(param.azimuth)
+
+        elevation = random_number_gen.uniform(param.elevation_min, param.elevation_max)
+        aeromax_base_station.elevation = np.array([elevation])
+
+        aeromax_base_station.active = np.array([True])
+        aeromax_base_station.tx_power = np.array([param.tx_power_density + 10*math.log10(param.bandwidth*1e6) + 30])
+        aeromax_base_station.rx_interference = -500
+
+        if param.antenna_pattern.upper() == "OMNI":
+            aeromax_base_station.antenna = np.array([AntennaOmni(param.antenna_gain)])
+        elif param.antenna_pattern.upper() == "ITU-R S.1855":
+            aeromax_base_station.antenna = np.array([AntennaS1855(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.465":
+            aeromax_base_station.antenna = np.array([AntennaS465(param)])
+        elif param.antenna_pattern.upper() == "MODIFIED ITU-R S.465":
+            aeromax_base_station.antenna = np.array([AntennaModifiedS465(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.580":
+            aeromax_base_station.antenna = np.array([AntennaS580(param)])
+        else:
+            sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
+            sys.exit(1)
+
+        aeromax_base_station.noise_temperature = param.noise_temperature
+        aeromax_base_station.bandwidth = np.array([param.bandwidth])
+        aeromax_base_station.noise_temperature = param.noise_temperature
+        aeromax_base_station.thermal_noise = -500
+        aeromax_base_station.total_interference = -500
+
+        return aeromax_base_station
+
+    @staticmethod
+    def generate_aeromax_cpe_station(param: ParametersAmaxCpe, random_number_gen: np.random.RandomState, *args):
+        """
+        Generates FSS Earth Station.
+
+        Arguments:
+            param: ParametersFssEs
+            random_number_gen: np.random.RandomState
+            topology (optional): Topology
+        """
+        if len(args): topology = args[0]
+
+        aeromax_cpe_station = StationManager(1)
+        aeromax_cpe_station.station_type = StationType.AMT_GS
+
+        if param.location.upper() == "FIXED":
+            aeromax_cpe_station.x = np.array([param.x])
+            aeromax_cpe_station.y = np.array([param.y])
+        elif param.location.upper() == "CELL":
+            x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
+                                                                      param.min_dist_to_ap, True)
+            aeromax_cpe_station.x = np.array(x)
+            aeromax_cpe_station.y = np.array(y)
+        elif param.location.upper() == "NETWORK":
+            x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
+                                                                      param.min_dist_to_ap, False)
+            aeromax_cpe_station.x = np.array(x)
+            aeromax_cpe_station.y = np.array(y)
+        elif param.location.upper() == "UNIFORM_DIST":
+            dist = random_number_gen.uniform( param.min_dist_to_ap, param.max_dist_to_ap)
+            angle = random_number_gen.uniform(-np.pi, np.pi)
+            aeromax_cpe_station.x[0] = np.array(dist * np.cos(angle))
+            aeromax_cpe_station.y[0] = np.array(dist * np.sin(angle))
+        else:
+            sys.stderr.write("ERROR\nFSS-ES location type {} not supported".format(param.location))
+            sys.exit(1)
+
+        aeromax_cpe_station.height = np.array([param.height])
+
+        if param.azimuth.upper() == "RANDOM":
+            aeromax_cpe_station.azimuth = random_number_gen.uniform(-180., 180.)
+        else:
+            aeromax_cpe_station.azimuth = float(param.azimuth)
+
+        elevation = random_number_gen.uniform(param.elevation_min, param.elevation_max)
+        aeromax_cpe_station.elevation = np.array([elevation])
+
+        aeromax_cpe_station.active = np.array([True])
+        aeromax_cpe_station.tx_power = np.array([param.tx_power_density + 10*math.log10(param.bandwidth*1e6) + 30])
+        aeromax_cpe_station.rx_interference = -500
+
+        if param.antenna_pattern.upper() == "OMNI":
+            aeromax_cpe_station.antenna = np.array([AntennaOmni(param.antenna_gain)])
+        elif param.antenna_pattern.upper() == "ITU-R S.1855":
+            aeromax_cpe_station.antenna = np.array([AntennaS1855(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.465":
+            aeromax_cpe_station.antenna = np.array([AntennaS465(param)])
+        elif param.antenna_pattern.upper() == "MODIFIED ITU-R S.465":
+            aeromax_cpe_station.antenna = np.array([AntennaModifiedS465(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.580":
+            aeromax_cpe_station.antenna = np.array([AntennaS580(param)])
+        else:
+            sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
+            sys.exit(1)
+
+        aeromax_cpe_station.noise_temperature = param.noise_temperature
+        aeromax_cpe_station.bandwidth = np.array([param.bandwidth])
+        aeromax_cpe_station.noise_temperature = param.noise_temperature
+        aeromax_cpe_station.thermal_noise = -500
+        aeromax_cpe_station.total_interference = -500
+
+        return aeromax_cpe_station
+
 
     @staticmethod
     def generate_fs_station(param: ParametersFs):
