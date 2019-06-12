@@ -64,6 +64,7 @@ class Parameters(object):
         #######################################################################
         # RLAN
         #######################################################################
+        self.rlan.rlan_type               = config.get("RLAN", "rlan_type")
         self.rlan.topology                = config.get("RLAN", "topology")
         self.rlan.wrap_around             = config.getboolean("RLAN", "wrap_around")
         self.rlan.num_macrocell_sites     = config.getint("RLAN", "num_macrocell_sites")
