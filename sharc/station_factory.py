@@ -16,6 +16,7 @@ from sharc.parameters.parameters_antenna_rlan import ParametersAntennaRlan
 from sharc.parameters.parameters_fs import ParametersFs
 from sharc.parameters.parameters_fss_ss import ParametersFssSs
 from sharc.parameters.parameters_fss_es import ParametersFssEs
+from sharc.parameters.parameters_amt_embraer import ParametersAmtEmbraer
 from sharc.parameters.parameters_haps import ParametersHaps
 from sharc.parameters.parameters_rns import ParametersRns
 from sharc.parameters.parameters_ras import ParametersRas
@@ -367,6 +368,8 @@ class StationFactory(object):
     def generate_system(parameters: Parameters, topology: Topology, random_number_gen: np.random.RandomState ):
         if parameters.general.system == "FSS_ES":
             return StationFactory.generate_fss_earth_station(parameters.fss_es, random_number_gen, topology)
+        if parameters.general.system == "AMT_EMBRAER":
+            return StationFactory.generate_amt_embraer_station(parameters.amt_embraer, random_number_gen, topology)
         elif parameters.general.system == "FSS_SS":
             return StationFactory.generate_fss_space_station(parameters.fss_ss)
         elif parameters.general.system == "FS":
@@ -508,6 +511,80 @@ class StationFactory(object):
         fss_earth_station.total_interference = -500
 
         return fss_earth_station
+
+    @staticmethod
+
+    def generate_amt_embraer_station(param: ParametersAmtEmbraer, random_number_gen: np.random.RandomState, *args):
+        """
+        Generates FSS Earth Station.
+
+        Arguments:
+            param: ParametersFssEs
+            random_number_gen: np.random.RandomState
+            topology (optional): Topology
+        """
+        if len(args): topology = args[0]
+
+        amt_embraer_station = StationManager(1)
+        amt_embraer_station.station_type = StationType.AMT_EMBRAER
+
+        if param.location.upper() == "FIXED":
+            amt_embraer_station.x = np.array([param.x])
+            amt_embraer_station.y = np.array([param.y])
+        elif param.location.upper() == "CELL":
+            x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
+                                                                      param.min_dist_to_ap, True)
+            amt_embraer_station.x = np.array(x)
+            amt_embraer_station.y = np.array(y)
+        elif param.location.upper() == "NETWORK":
+            x, y, dummy1, dummy2 = StationFactory.get_random_position(1, topology, random_number_gen,
+                                                                      param.min_dist_to_ap, False)
+            amt_embraer_station.x = np.array(x)
+            amt_embraer_station.y = np.array(y)
+        elif param.location.upper() == "UNIFORM_DIST":
+            dist = random_number_gen.uniform( param.min_dist_to_ap, param.max_dist_to_ap)
+            angle = random_number_gen.uniform(-np.pi, np.pi)
+            amt_embraer_station.x[0] = np.array(dist * np.cos(angle))
+            amt_embraer_station.y[0] = np.array(dist * np.sin(angle))
+        else:
+            sys.stderr.write("ERROR\nFSS-ES location type {} not supported".format(param.location))
+            sys.exit(1)
+
+        amt_embraer_station.height = np.array([param.height])
+
+        if param.azimuth.upper() == "RANDOM":
+            amt_embraer_station.azimuth = random_number_gen.uniform(-180., 180.)
+        else:
+            amt_embraer_station.azimuth = float(param.azimuth)
+
+        elevation = random_number_gen.uniform(param.elevation_min, param.elevation_max)
+        amt_embraer_station.elevation = np.array([elevation])
+
+        amt_embraer_station.active = np.array([True])
+        amt_embraer_station.tx_power = np.array([param.tx_power_density + 10*math.log10(param.bandwidth*1e6) + 30])
+        amt_embraer_station.rx_interference = -500
+
+        if param.antenna_pattern.upper() == "OMNI":
+            amt_embraer_station.antenna = np.array([AntennaOmni(param.antenna_gain)])
+        elif param.antenna_pattern.upper() == "ITU-R S.1855":
+            amt_embraer_station.antenna = np.array([AntennaS1855(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.465":
+            amt_embraer_station.antenna = np.array([AntennaS465(param)])
+        elif param.antenna_pattern.upper() == "MODIFIED ITU-R S.465":
+            amt_embraer_station.antenna = np.array([AntennaModifiedS465(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.580":
+            amt_embraer_station.antenna = np.array([AntennaS580(param)])
+        else:
+            sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
+            sys.exit(1)
+
+        amt_embraer_station.noise_temperature = param.noise_temperature
+        amt_embraer_station.bandwidth = np.array([param.bandwidth])
+        amt_embraer_station.noise_temperature = param.noise_temperature
+        amt_embraer_station.thermal_noise = -500
+        amt_embraer_station.total_interference = -500
+
+        return amt_embraer_station
 
 
     @staticmethod

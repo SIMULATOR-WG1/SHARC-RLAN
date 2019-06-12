@@ -15,6 +15,7 @@ from sharc.parameters.parameters_antenna_rlan import ParametersAntennaRlan
 from sharc.parameters.parameters_fs import ParametersFs
 from sharc.parameters.parameters_fss_ss import ParametersFssSs
 from sharc.parameters.parameters_fss_es import ParametersFssEs
+from sharc.parameters.parameters_amt_embraer import ParametersAmtEmbraer
 from sharc.parameters.parameters_haps import ParametersHaps
 from sharc.parameters.parameters_rns import ParametersRns
 from sharc.parameters.parameters_ras import ParametersRas
@@ -36,6 +37,7 @@ class Parameters(object):
         self.fs = ParametersFs()
         self.fss_ss = ParametersFssSs()
         self.fss_es = ParametersFssEs()
+        self.amt_embraer = ParametersAmtEmbraer()
         self.haps = ParametersHaps()
         self.rns = ParametersRns()
         self.ras = ParametersRas()
@@ -362,3 +364,56 @@ class Parameters(object):
         self.ras.rx_lat = config.getfloat("RAS", "rx_lat")
         self.ras.polarization = config.get("RAS", "polarization")
         self.ras.clutter_loss = config.getboolean("RAS", "clutter_loss")
+
+        #######################################################################
+        # AMT Embraer station
+        #######################################################################
+        self.amt_embraer.location = config.get("AMT_EMBRAER", "location")
+        self.amt_embraer.x = config.getfloat("AMT_EMBRAER", "x")
+        self.amt_embraer.y = config.getfloat("AMT_EMBRAER", "y")
+        self.amt_embraer.min_dist_to_ap = config.getfloat("AMT_EMBRAER", "min_dist_to_ap")
+        self.amt_embraer.max_dist_to_ap = config.getfloat("AMT_EMBRAER", "max_dist_to_ap")
+        self.amt_embraer.height = config.getfloat("AMT_EMBRAER", "height")
+        self.amt_embraer.elevation_min = config.getfloat("AMT_EMBRAER", "elevation_min")
+        self.amt_embraer.elevation_max = config.getfloat("AMT_EMBRAER", "elevation_max")
+        self.amt_embraer.azimuth = config.get("AMT_EMBRAER", "azimuth")
+        self.amt_embraer.frequency = config.getfloat("AMT_EMBRAER", "frequency")
+        self.amt_embraer.bandwidth = config.getfloat("AMT_EMBRAER", "bandwidth")
+        self.amt_embraer.adjacent_ch_selectivity = config.getfloat("AMT_EMBRAER", "adjacent_ch_selectivity")
+        self.amt_embraer.tx_power_density = config.getfloat("AMT_EMBRAER", "tx_power_density")
+        self.amt_embraer.noise_temperature = config.getfloat("AMT_EMBRAER", "noise_temperature")
+        self.amt_embraer.inr_scaling = config.getfloat("AMT_EMBRAER", "inr_scaling")
+        self.amt_embraer.antenna_gain = config.getfloat("AMT_EMBRAER", "antenna_gain")
+        self.amt_embraer.antenna_pattern = config.get("AMT_EMBRAER", "antenna_pattern")
+        self.amt_embraer.antenna_envelope_gain = config.getfloat("AMT_EMBRAER", "antenna_envelope_gain")
+        self.amt_embraer.diameter = config.getfloat("AMT_EMBRAER", "diameter")
+        self.amt_embraer.channel_model = config.get("AMT_EMBRAER", "channel_model")
+        self.amt_embraer.line_of_sight_prob = config.getfloat("AMT_EMBRAER", "line_of_sight_prob")
+        self.amt_embraer.BOLTZMANN_CONSTANT = config.getfloat("AMT_EMBRAER", "BOLTZMANN_CONSTANT")
+        self.amt_embraer.EARTH_RADIUS = config.getfloat("AMT_EMBRAER", "EARTH_RADIUS")
+
+        # P452 parameters
+        self.amt_embraer.atmospheric_pressure = config.getfloat("AMT_EMBRAER", "atmospheric_pressure")
+        self.amt_embraer.air_temperature = config.getfloat("AMT_EMBRAER", "air_temperature")
+        self.amt_embraer.N0 = config.getfloat("AMT_EMBRAER", "N0")
+        self.amt_embraer.delta_N = config.getfloat("AMT_EMBRAER", "delta_N")
+        self.amt_embraer.percentage_p = config.get("AMT_EMBRAER", "percentage_p")
+        self.amt_embraer.Dct = config.getfloat("AMT_EMBRAER", "Dct")
+        self.amt_embraer.Dcr = config.getfloat("AMT_EMBRAER", "Dcr")
+        self.amt_embraer.Hte = config.getfloat("AMT_EMBRAER", "Hte")
+        self.amt_embraer.Hre = config.getfloat("AMT_EMBRAER", "Hre")
+        self.amt_embraer.tx_lat = config.getfloat("AMT_EMBRAER", "tx_lat")
+        self.amt_embraer.rx_lat = config.getfloat("AMT_EMBRAER", "rx_lat")
+        self.amt_embraer.polarization = config.get("AMT_EMBRAER", "polarization")
+        self.amt_embraer.clutter_loss = config.getboolean("AMT_EMBRAER", "clutter_loss")
+        
+        # HDFSS propagation parameters
+        self.amt_embraer.es_position = config.get("AMT_EMBRAER", "es_position")
+        self.amt_embraer.shadow_enabled = config.getboolean("AMT_EMBRAER", "shadow_enabled")
+        self.amt_embraer.building_loss_enabled = config.getboolean("AMT_EMBRAER", "building_loss_enabled")
+        self.amt_embraer.same_building_enabled = config.getboolean("AMT_EMBRAER", "same_building_enabled")
+        self.amt_embraer.diffraction_enabled = config.getboolean("AMT_EMBRAER", "diffraction_enabled")
+        self.amt_embraer.ap_building_entry_loss_type = config.get("AMT_EMBRAER", "ap_building_entry_loss_type")
+        self.amt_embraer.ap_building_entry_loss_prob = config.getfloat("AMT_EMBRAER", "ap_building_entry_loss_prob")
+        self.amt_embraer.ap_building_entry_loss_value = config.getfloat("AMT_EMBRAER", "ap_building_entry_loss_value")
+
