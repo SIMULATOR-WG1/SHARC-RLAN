@@ -27,54 +27,48 @@ class AntennaRadar():
         #r_gain = np.absolute(kwargs["off_axis_angle_vec"]) #to enable during complete simulation scenario.
 
         #rn_gain=np.zeros(r_gain.shape)
-        rn_gain= 10**(self.r_gain/10.0) #numeric gain
-        
+#        rn_gain= 10**(self.r_gain/10.0) #numeric gain
+        rn_gain= self.r_gain
         
         #thetas...
-#        r_tetha_m = np.zeros(r_gain.shape)
-#        r_tetha_r = np.zeros(r_gain.shape)
-#        r_tetha_b = np.zeros(r_gain.shape)
         r_tetha_m = 0
         r_tetha_r = 0
         r_tetha_b = 0
       
         #Considering Table 7 from [1]        
         #Table 7 from [1] VERY HIGH GAIN 
-        idx_0 = np.where((self.r_gain > 48))[0]  
-#        r_tetha_r[idx_0] = 27.466*(10**((-0.3*rn_gain[idx_0])/10.0))
-#        r_tetha_b[idx_0] = 48.0 
-        r_tetha_r = 27.466*(10**((-0.3*rn_gain)/10.0))
-        r_tetha_b = 48.0 
+        if (self.r_gain > 48):
+            r_tetha_r = 27.466*(10**((-0.3*rn_gain)/10.0))
+            r_tetha_b = 48.0 
         
         
         #Table 7 from [1] HIGH GAIN
-        idx_1 = np.where((22 < self.r_gain) & (self.r_gain <= 48))[0]
-#        r_tetha_r[idx_1] = 250.0/(10**(rn_gain[idx_1]/20.0))
-#        r_tetha_b[idx_1] = 48.0
-        r_tetha_r= 250.0/(10**(rn_gain/20.0))
-        r_tetha_b= 48.0
+        if ((22 < self.r_gain) and (self.r_gain <= 48)):
+            r_tetha_r= 250.0/(10**(rn_gain/20.0))
+            r_tetha_b= 48.0
         
-#        #Table 7 from [1] MEDIUM GAIN  
-        idx_2 = np.where((10 < self.r_gain) & (self.r_gain < 22))[0]
-#        r_tetha_r[idx_2] = 250.0/(10**(rn_gain[idx_2]/20.0))
-#        r_tetha_b[idx_2] = 131.8257*(10**((-rn_gain[idx_2])/50.0))
-        r_tetha_r= 250.0/(10**(rn_gain/20.0))
-        r_tetha_b= 131.8257*(10**((-rn_gain)/50.0))
+#       #Table 7 from [1] MEDIUM GAIN  
+        if ((10 < self.r_gain) and (self.r_gain < 22)):
+            r_tetha_r= 250.0/(10**(rn_gain/20.0))
+            r_tetha_b= 131.8257*(10**((-rn_gain)/50.0))
 
-        idx_3 = np.where((self.r_gain > 10))[0]
-#        r_tetha_m[idx_3] = (50*(0.25*rn_gain[idx_3] + 7)**0.5)/(10**(rn_gain[idx_3]/20.0)) 
-        r_tetha_m = (50*(0.25*rn_gain + 7)**0.5)/(10**(rn_gain/20.0)) 
+        if (self.r_gain > 10):
         
-        resultado_ag= [r_tetha_m, r_tetha_r, r_tetha_b]
+            r_tetha_m = (50*(0.25*rn_gain + 7)**0.5)/(10**(rn_gain/20.0)) 
         
-        return resultado_ag
+        
+        results_ag= [r_tetha_m, r_tetha_r, r_tetha_b]
+        
+        return results_ag
 
     def calculate_gain(self, angle, tetha):
         #phi = np.absolute(kwargs["off_axis_angle_vec"])
 
-        rn_gain= 10**(self.r_gain/10.0) #numeric gain
+#        rn_gain= 10**(self.r_gain/10.0) #numeric gain
         
         gain = np.zeros(tetha.shape)
+        
+        rn_gain= self.r_gain
 
         #VERY HIGH GAIN ANTENNAS Table 8 
         if (self.r_gain > 48):
@@ -82,35 +76,37 @@ class AntennaRadar():
             idx_1 = np.where((tetha >= angle[0]) & (tetha < angle[1]))[0]
             idx_2 = np.where((tetha >= angle[1]) & (tetha < angle[2]))[0]
             idx_3 = np.where((tetha >= angle[2]) & (tetha < 180 ))[0]
-    
-            gain[idx_0] = rn_gain - 4*(10**(-4)*(10**(rn_gain/10.0))*(tetha[idx_0]**2))
+
+            gain[idx_0] = rn_gain - 4*(10**(-4)*(rn_gain)*(tetha[idx_0]**2))
             gain[idx_1] = 0.75*rn_gain - 7
             gain[idx_2] = 29 - 25 * np.log10(tetha[idx_2]) 
             gain[idx_3] = -13
         
         #HIGH GAIN ANTENNAS Table 9 
-        if (self.r_gain > 22 & self.r_gain < 48):
+        if (self.r_gain > 22 and self.r_gain < 48):
             idx_0 = np.where((tetha > self.theta_min) & (tetha < angle[0] ))[0]
             idx_1 = np.where((tetha >= angle[0]) & (tetha < angle[1] ))[0]
             idx_2 = np.where((tetha >= angle[1]) & (tetha < angle[2] ))[0]
             idx_3 = np.where((tetha >= angle[2]) & (tetha < 180 ))[0]
-    
-            gain[idx_0] = rn_gain - 4*((10**(-4))*(10**(rn_gain/10.0))*(tetha[idx_0]**2))
+
+            gain[idx_0] = rn_gain - 4*(10**(-4)*(rn_gain)*(tetha[idx_0]**2))
             gain[idx_1] = 0.75*rn_gain - 7
             gain[idx_2] = 53 -(rn_gain/2.0) - 25*np.log10(tetha[idx_2])
             gain[idx_3] = 11 -(rn_gain/2.0)
 
         #MEDIUM GAIN ANTENNAS Table 10
-        if (self.r_gain > 10 & self.r_gain < 22):
+        if (self.r_gain > 10 and self.r_gain < 22):
             idx_0 = np.where((tetha > self.theta_min) & (tetha < angle[0] ))[0]
             idx_1 = np.where((tetha >= angle[0]) & (tetha < angle[1] ))[0]
             idx_2 = np.where((tetha >= angle[1]) & (tetha < angle[2] ))[0]
             idx_3 = np.where((tetha >= angle[2]) & (tetha < 180 ))[0]
     
-            gain[idx_0] = rn_gain - 4*(10**(-4)*(10**(rn_gain/10.0))*(tetha[idx_0]**2))
+            gain[idx_0] = rn_gain - 4*((10**(-4)*(rn_gain))*(tetha[idx_0]**2))
             gain[idx_1] = 0.75*rn_gain - 7
             gain[idx_2] = 53 -(rn_gain/2.0) - 25*np.log10(tetha[idx_2])
             gain[idx_3] = 0
+        
+#        gain_db= np.log10(gain)
 
         return gain
 
@@ -118,7 +114,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     #theta angle.. 
-    tetha = np.linspace(2, 180, num = 1000) 
+    tetha = np.linspace(2, 180, num = 100000) 
     
     #radar antenna gain dbi
     #r_gain = np.linspace(10, 60, num = 100000)
@@ -148,7 +144,7 @@ if __name__ == '__main__':
     #Plotting...
     fig = plt.figure(figsize=(8,7), facecolor='w', edgecolor='k')  # create a figure object
 
-    plt.semilogx(r_tetha, gain27, "-g", label = "without antenna gain substraction")
+    plt.plot(tetha, gain27, "-g", label = "without antenna gain substraction")
     #plt.semilogx(r_tetha, gain27 - param27.antenna_gain, "-b", label = "$f = 5.100$ $GHz,$ $D = 5$ $m$")
     #plt.semilogx(phi, gain - param.antenna_gain, "-r", label = "$f = 5.100$ $GHz,$ $D = 0.45$ $m$")
 
@@ -156,8 +152,8 @@ if __name__ == '__main__':
     plt.xlabel("Off-axis angle $\phi$ [deg]")
     plt.ylabel("Gain relative to $G_m$ [dBi]")
     plt.legend(loc="lower left")
-    plt.xlim((phi[0], phi[-1]))
-    plt.ylim((-80, 80))
+#    plt.xlim((phi[0], phi[-1]))
+#    plt.ylim((-80, 80))
 
     #ax = plt.gca()
     #ax.set_yticks([-30, -20, -10, 0])
