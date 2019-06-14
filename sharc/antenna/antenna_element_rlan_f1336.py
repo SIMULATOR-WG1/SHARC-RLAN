@@ -152,12 +152,12 @@ if __name__ == '__main__':
 
     param = ParametersAntennaRlan()
 
-    param.element_max_g = 15
-    param.element_phi_deg_3db = 65
-    param.element_theta_deg_3db = 0
+    param.element_max_g = 34
+    param.element_phi_deg_3db = 3.5
+    param.element_theta_deg_3db = 3.5
 
-    # 0 degrees tilt
-    param.downtilt_deg = 0
+    # 30 degrees tilt
+    param.downtilt_deg = 30
 
     antenna = AntennaElementRlanF1336( param )
 
@@ -187,7 +187,7 @@ if __name__ == '__main__':
     plt.plot(phi_vec, pattern_hor_30deg, label = 'elevation = 30 degrees')
     plt.plot(phi_vec, pattern_hor_60deg, label = 'elevation = 60 degrees')
 
-    plt.title('downtilt = 0 degrees')
+    plt.title('downtilt = 30 degrees')
     plt.xlabel ('azimuth (degrees)')
     plt.ylabel ('gain (dBi)')
 
@@ -207,7 +207,7 @@ if __name__ == '__main__':
     plt.plot(theta_vec, pattern_ver_90deg, label='azimuth = 90 degrees')
     plt.plot(theta_vec, pattern_ver_120deg, label='azimuth = 120 degrees')
 
-    plt.title('downtilt = 0 degrees')
+    plt.title('downtilt = 30 degrees')
     plt.xlabel('elevation (degrees)')
     plt.ylabel('gain (dBi)')
 
