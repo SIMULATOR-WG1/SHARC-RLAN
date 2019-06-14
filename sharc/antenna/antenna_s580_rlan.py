@@ -25,7 +25,7 @@ class AntennaS580_rlan(Antenna):
            self.phi_min = 100 * lmbda / param.diameter
 
     def calculate_gain(self, *args, **kwargs) -> np.array:
-        #phi = np.absolute(kwargs["off_axis_angle_vec"])
+#        phi = np.absolute(kwargs["off_axis_angle_vec"])
 
         gain = np.zeros(phi.shape)
 
