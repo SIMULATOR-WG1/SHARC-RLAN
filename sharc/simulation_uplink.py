@@ -89,8 +89,11 @@ class SimulationUplink(Simulation):
         """
         Apply uplink power control algorithm
         """
-        if self.parameters.rlan.rlan_type == "LAA":
+        if self.parameters.rlan.rlan_type == "WIFI":
             self.parameters.rlan.ue_tx_power_control == "OFF"
+            
+        if self.parameters.rlan.rlan_type == "LAA":
+            self.parameters.rlan.ue_tx_power_control == "ON"
 
         if self.parameters.rlan.ue_tx_power_control == "OFF":
             ue_active = np.where(self.ue.active)[0]

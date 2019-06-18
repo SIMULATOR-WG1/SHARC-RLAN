@@ -42,4 +42,6 @@ class StationType(Enum):
     RDR_GS = 10 # Radar Ground Station
     AMAX_BS = 11 # Radar Ground Station
     AMAX_CPE = 12 # Radar Ground Station
+    LAA_BS = 13 # LAA Base Station
+    LAA_UE = 14 # LAA User Equipment
     

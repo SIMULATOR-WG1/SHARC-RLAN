@@ -52,7 +52,7 @@ class TopologyIndoor(Topology):
             self.all_buildings = False
             self.num_rlan_buildings = int(param.num_rlan_buildings)
         self.rlan_buildings = list()
-        self.total_bs_level = self.num_rlan_buildings*self.num_cells
+        self.total_ap_level = self.num_rlan_buildings*self.num_cells
         
         self.height = np.empty(0)
         
@@ -157,8 +157,8 @@ class TopologyIndoor(Topology):
         for f in range(int(self.num_floors)):
             for build in self.rlan_buildings:
                 c = build[1]
-                x_b = self.x[f*self.total_bs_level + c*self.num_cells]  - self.cell_radius 
-                z_b = self.height[f*self.total_bs_level + c*self.num_cells]
+                x_b = self.x[f*self.total_ap_level + c*self.num_cells]  - self.cell_radius 
+                z_b = self.height[f*self.total_ap_level + c*self.num_cells]
                 points = list([[x_b, z_b],
                                [x_b + self.b_w, z_b],
                                [x_b + self.b_w, z_b - self.b_h],
@@ -174,9 +174,8 @@ if __name__ == '__main__':
     param.n_rows = 5
     param.n_colums = 5
     param.num_rlan_buildings = 5
-    param.num_floors = 3
+    param.num_floors = 5
     param.street_width = 30
-    param.intersite_distance = 20
     param.num_cells = 6
     param.ue_indoor_percent = 0.95
     param.building_class = "TRADITIONAL"
