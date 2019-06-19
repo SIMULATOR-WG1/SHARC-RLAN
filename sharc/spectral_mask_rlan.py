@@ -9,6 +9,7 @@ from sharc.support.enumerations import StationType
 from sharc.spectral_mask import SpectralMask
 
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 
 class SpectralMaskRlan(SpectralMask):
@@ -51,9 +52,9 @@ class SpectralMaskRlan(SpectralMask):
             scenario (str): INDOOR or OUTDOOR scenario
         """
         # Spurious domain limits [dBm/MHz]
-        self.spurious_emissions = -59
+        self.spurious_emissions = -27
         # Mask delta f breaking limits [MHz]
-        self.delta_f_lim = np.array([0, 60])
+        self.delta_f_lim = np.array([0,0, 3, 41, 81])
         
         # Attributes
         self.sta_type = sta_type
@@ -61,8 +62,8 @@ class SpectralMaskRlan(SpectralMask):
         self.band_mhz = band_mhz
         self.freq_mhz = freq_mhz
         
-        self.freq_lim = np.concatenate(((freq_mhz - band_mhz/2)-self.delta_f_lim[::-1],
-                                        (freq_mhz + band_mhz/2)+self.delta_f_lim))
+        self.freq_lim = np.concatenate(((freq_mhz - band_mhz/2)-self.delta_f_lim[::-1],freq_mhz,
+                                        (freq_mhz + band_mhz/2)+self.delta_f_lim), axis=None)
        
         
     def set_mask(self, power = 0):
@@ -78,34 +79,33 @@ class SpectralMaskRlan(SpectralMask):
         # Set new transmit power value       
         if self.sta_type is StationType.RLAN_UE:
             # Table 8
-            mask_dbm = np.array([-59, self.spurious_emissions])
+            mask_dbm =  np.array([self.p_tx,self.p_tx -20,self.p_tx -28,self.p_tx -40, self.spurious_emissions])
             
         elif self.sta_type is StationType.RLAN_AP:             
             # Table 1
-            mask_dbm = np.array([-59, self.spurious_emissions])
+            mask_dbm =  np.array([self.p_tx,self.p_tx -20,self.p_tx -28,self.p_tx -40, self.spurious_emissions])
             
- 
-                 
         self.mask_dbm = np.concatenate((mask_dbm[::-1],np.array([self.p_tx]),mask_dbm))
         
 if __name__ == '__main__':
     # Initialize variables
-    sta_type = StationType.RLAN_AP
-    p_tx = 29.03  #in dBm for RLAN Wifi is 800 mw (10*log(800)= 29.03)
+    sta_type = StationType.RLAN_UE
+    p_tx = 23.03  #in dBm for RLAN Wifi is 800 mw (10*log(800)= 29.03)
     freq = 5210
-    band = 80
+    band = 20
     
     # Create mask
     msk = SpectralMaskRlan(sta_type,freq,band)
     msk.set_mask(p_tx)
     
     # Frequencies
-    freqs = np.linspace(-600,600,num=1000)+freq
+    freqs = np.linspace(-120,120,num=1000)+freq
     
     # Mask values
     mask_val = np.ones_like(freqs)*msk.mask_dbm[0]
-    for k in range(len(msk.freq_lim)-1,-1,-1):
-        mask_val[np.where(freqs < msk.freq_lim[k])] = msk.mask_dbm[k]
+    #for k in range(len(msk.freq_lim)-1,-1,-1):
+#        mask_val[np.where(freqs < msk.freq_lim[k])] = msk.mask_dbm[k]
+    mask_val = np.interp(freqs,msk.freq_lim,msk.mask_dbm)
         
     # Plot
     plt.plot(freqs,mask_val)
