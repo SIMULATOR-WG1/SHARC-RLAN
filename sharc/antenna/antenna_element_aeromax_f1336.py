@@ -10,7 +10,7 @@ import sys
 
 from sharc.support.named_tuples import AntennaPar
 
-class AntennaElementRlanF1336(object):
+class AntennaElementAeromaxF1336(object):
     """
     Implements a single element of an RLAN antenna array following ITU-R F.1336-4, item 3.1.1
     using parameters from ITU-R M2292
@@ -74,6 +74,7 @@ class AntennaElementRlanF1336(object):
         """
         #x_h = abs(phi)/self.phi_deg_3db
         #if x_h < 0.5:
+        #gain = -12 * x_h ** 2
         gain = np.zeros(np.size(phi))
         #else:
         #    gain = -12 * x_h ** (2 - self.k_h) - self.lambda_k_h
@@ -100,11 +101,13 @@ class AntennaElementRlanF1336(object):
         #if x_v.any() < self.x_k:
         #    gain = -12 * x_v ** 2
         #elif x_v.any() < 4:
+        #gain = -12 + 10*np.log10(x_v**-1.5 + self.k_v)
         gain1 = 6 - 12 * x_v**2
         gain2 = 6 - 12 + 10*np.log10(max(abs(x_v).all(),1)**-1.5 + self.k_v)
         #elif x_v.any() < 90 / self.theta_deg_3db:
         #    gain = - self.lambda_k_v - self.incline_factor * np.log10(x_v)
         #else:
+        # gain = self.g_hr_180
         gain = np.fmax(gain1,gain2)
 
         return gain
@@ -155,18 +158,12 @@ if __name__ == '__main__':
 
     param = ParametersAntennaRlan()
 
-<<<<<<< HEAD
-    param.element_max_g = 34
-    param.element_phi_deg_3db = 3.5
-    param.element_theta_deg_3db = 3.5
-=======
     param.element_max_g = 0
     param.element_phi_deg_3db = 360
     param.element_theta_deg_3db = 90
->>>>>>> 37d5202eb2affd23f721de82a1884e4500845813
 
-    # 30 degrees tilt
-    param.downtilt_deg = 30
+    # 0 degrees tilt
+    param.downtilt_deg = 0
 
     antenna = AntennaElementRlanF1336( param )
 
@@ -196,7 +193,7 @@ if __name__ == '__main__':
     plt.plot(phi_vec, pattern_hor_30deg, label = 'elevation = 30 degrees')
     plt.plot(phi_vec, pattern_hor_60deg, label = 'elevation = 60 degrees')
 
-    plt.title('downtilt = 30 degrees')
+    plt.title('downtilt = 0 degrees')
     plt.xlabel ('azimuth (degrees)')
     plt.ylabel ('gain (dBi)')
 
@@ -216,7 +213,7 @@ if __name__ == '__main__':
     plt.plot(theta_vec, pattern_ver_90deg, label='azimuth = 90 degrees')
     plt.plot(theta_vec, pattern_ver_120deg, label='azimuth = 120 degrees')
 
-    plt.title('downtilt = 30 degrees')
+    plt.title('downtilt = 0 degrees')
     plt.xlabel('elevation (degrees)')
     plt.ylabel('gain (dBi)')
 
