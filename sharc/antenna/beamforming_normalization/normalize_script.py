@@ -70,7 +70,7 @@ from sharc.antenna.beamforming_normalization.beamforming_normalizer import Beamf
 ###############################################################################
 ## List of antenna parameters to which calculate the normalization factors.
 param_list = [AntennaPar(False,None,"M2101",5,90,90,25,25,8,16,0.5,0.5,0)]
-file_names = ['bs_indoor_norm.npz']
+file_names = ['ap_indoor_norm.npz']
 ###############################################################################
 ## Setup
 # General parameters
