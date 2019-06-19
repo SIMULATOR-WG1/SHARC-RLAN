@@ -286,6 +286,7 @@ class PropagationHDFSSRoofTop(Propagation):
 if __name__ == '__main__':
     
     import matplotlib.pyplot as plt
+    from sharc.propagation.propagation_hdfss import PropagationHDFSS
     
     rnd = np.random.RandomState(101)
     par = ParametersFssEs()
@@ -295,11 +296,12 @@ if __name__ == '__main__':
     par.ap_building_entry_loss_type = 'FIXED_VALUE'
     par.ap_building_entry_loss_prob = 0.5
     par.ap_building_entry_loss_value = 50
+    par.es_position = "ROOFTOP"
     prop = PropagationHDFSS(par,rnd)
     
     d = np.linspace(5,1000,num=2000)
     d = np.array([list(d)])
-    f = 40e3*np.ones_like(d)
+    f = 5e3*np.ones_like(d)
     ele = np.transpose(np.zeros_like(d))
     sta_type = StationType.RLAN_AP
         

@@ -51,7 +51,7 @@ class AntennaElementRlanF1336(object):
         self.k_p = .7
         self.k_h = .7
         self.lambda_k_h = 3 * (1-.5**(-self.k_h))
-        self.k_v = .3
+        self.k_v = .5
         self.incline_factor = np.log10(((180/self.theta_deg_3db)**1.5 * (4**-1.5+self.k_v))/
                                        (1 + 8 * self.k_p)) / np.log10(22.5 / self.theta_deg_3db)
         self.x_k = np.sqrt(1 - .36 * self.k_v)
@@ -72,12 +72,12 @@ class AntennaElementRlanF1336(object):
         -------
             a_h (np.array): horizontal radiation pattern gain value
         """
-        x_h = abs(phi)/self.phi_deg_3db
-        if x_h < 0.5:
-            gain = -12 * x_h ** 2
-        else:
-            gain = -12 * x_h ** (2 - self.k_h) - self.lambda_k_h
-        gain = max(gain, self.g_hr_180)
+        #x_h = abs(phi)/self.phi_deg_3db
+        #if x_h < 0.5:
+        gain = np.zeros(np.size(phi))
+        #else:
+        #    gain = -12 * x_h ** (2 - self.k_h) - self.lambda_k_h
+        #gain = max(gain, self.g_hr_180)
 
         return gain
 
@@ -93,16 +93,19 @@ class AntennaElementRlanF1336(object):
         -------
             a_v (np.array): vertical radiation pattern gain value
         """
-        x_v = abs(theta)/self.theta_deg_3db
+        
+        theta3 = 27
+        x_v = abs(theta)/theta3
 
-        if x_v < self.x_k:
-            gain = -12 * x_v ** 2
-        elif x_v < 4:
-            gain = -12 + 10*np.log10(x_v**-1.5 + self.k_v)
-        elif x_v < 90 / self.theta_deg_3db:
-            gain = - self.lambda_k_v - self.incline_factor * np.log10(x_v)
-        else:
-            gain = self.g_hr_180
+        #if x_v.any() < self.x_k:
+        #    gain = -12 * x_v ** 2
+        #elif x_v.any() < 4:
+        gain1 = 6 - 12 * x_v**2
+        gain2 = 6 - 12 + 10*np.log10(max(abs(x_v).all(),1)**-1.5 + self.k_v)
+        #elif x_v.any() < 90 / self.theta_deg_3db:
+        #    gain = - self.lambda_k_v - self.incline_factor * np.log10(x_v)
+        #else:
+        gain = np.fmax(gain1,gain2)
 
         return gain
 
@@ -129,10 +132,10 @@ class AntennaElementRlanF1336(object):
                 np.cos(theta_rad) * np.cos(phi_rad) * np.cos(self.downtilt_rad))/np.cos(new_theta_rad)
 
         # to avoid numerical errors, as sometimes cosines are slightly out of bounds
-        if cos > 1:
-            cos = 1
-        elif cos < -1:
-            cos = -1
+#        if cos > 1:
+#            cos = 1
+#        elif cos < -1:
+#            cos = -1
 
         phi_rad = np.arccos(cos)
         theta = new_theta_rad / np.pi * 180
@@ -141,8 +144,8 @@ class AntennaElementRlanF1336(object):
         #theta = theta - self.downtilt_rad * 180 / np.pi
         gain_hor = self.horizontal_pattern(phi)
         compression_ratio = (gain_hor - self.g_hr_180)/(self.g_hr_0 - self.g_hr_180)
-        gain = self.g_max + gain_hor + compression_ratio * self.vertical_pattern(theta)
-
+        gain = gain_hor + compression_ratio * self.vertical_pattern(theta)
+        
         return gain
 
 if __name__ == '__main__':
@@ -152,9 +155,15 @@ if __name__ == '__main__':
 
     param = ParametersAntennaRlan()
 
+<<<<<<< HEAD
     param.element_max_g = 34
     param.element_phi_deg_3db = 3.5
     param.element_theta_deg_3db = 3.5
+=======
+    param.element_max_g = 0
+    param.element_phi_deg_3db = 360
+    param.element_theta_deg_3db = 90
+>>>>>>> 37d5202eb2affd23f721de82a1884e4500845813
 
     # 30 degrees tilt
     param.downtilt_deg = 30

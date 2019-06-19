@@ -385,30 +385,30 @@ if __name__ == '__main__':
     figs_dir = "figs/"
 
     param = ParametersAntennaRlan()
-    param.normalization = True
+    param.normalization = False
     param.ap_normalization_file = 'beamforming_normalization\\ap_indoor_norm.npz'
     param.ue_normalization_file = 'beamforming_normalization\\ue_norm.npz'
     
-    param.ap_element_pattern = "M2101"
-    param.ap_tx_element_max_g    = 5
-    param.ap_tx_element_phi_deg_3db  = 90
+    param.ap_element_pattern = "F1336"
+    param.ap_tx_element_max_g    = 0
+    param.ap_tx_element_phi_deg_3db  = 360
     param.ap_tx_element_theta_deg_3db = 90
     param.ap_tx_element_am       = 25
     param.ap_tx_element_sla_v    = 25
-    param.ap_tx_n_rows           = 8
-    param.ap_tx_n_columns        = 16
+    param.ap_tx_n_rows           = 1
+    param.ap_tx_n_columns        = 4
     param.ap_tx_element_horiz_spacing = 0.5
     param.ap_tx_element_vert_spacing = 0.5
     param.ap_downtilt_deg = 0
 
-    param.ue_element_pattern = "M2101"
-    param.ue_tx_element_max_g    = 5
-    param.ue_tx_element_phi_deg_3db  = 90
+    param.ue_element_pattern = "F1336"
+    param.ue_tx_element_max_g    = 0
+    param.ue_tx_element_phi_deg_3db  = 360
     param.ue_tx_element_theta_deg_3db = 90
     param.ue_tx_element_am       = 25
     param.ue_tx_element_sla_v    = 25
-    param.ue_tx_n_rows           = 4
-    param.ue_tx_n_columns        = 4
+    param.ue_tx_n_rows           = 1
+    param.ue_tx_n_columns        = 2
     param.ue_tx_element_horiz_spacing = 0.5
     param.ue_tx_element_vert_spacing = 0.5
 
@@ -419,9 +419,9 @@ if __name__ == '__main__':
     par = param.get_antenna_parameters("AP","TX")
     ap_array = AntennaBeamformingRlan(par,0,0)
     f = plot.plot_element_pattern(ap_array,"AP","TX","ELEMENT")
-    f.savefig(figs_dir + "AP_element.pdf", bbox_inches='tight')
+ #   f.savefig(figs_dir + "AP_element.pdf", bbox_inches='tight')
     f = plot.plot_element_pattern(ap_array,"AP","TX","ARRAY")
-    f.savefig(figs_dir + "AP_array.pdf", bbox_inches='tight')
+ #   f.savefig(figs_dir + "AP_array.pdf", bbox_inches='tight')
 
     # Plot UE TX radiation patterns
     par = param.get_antenna_parameters("UE","TX")

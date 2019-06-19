@@ -8,8 +8,8 @@ Created on Fri Apr 14 14:19:38 2017
 import numpy as np
 import unittest
 
-from sharc.antenna.antenna_element_imt_m2101 import AntennaElementImtM2101
-from sharc.parameters.parameters_antenna_imt import ParametersAntennaImt
+from sharc.antenna.antenna_element_rlan_m2101 import AntennaElementRlanM2101
+from sharc.parameters.parameters_antenna_rlan import ParametersAntennaRlan
 
 class AntennaImtTest(unittest.TestCase):
 
