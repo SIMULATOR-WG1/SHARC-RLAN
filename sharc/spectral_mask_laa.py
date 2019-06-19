@@ -111,7 +111,7 @@ class SpectralMaskLaa(SpectralMask):
         
 if __name__ == '__main__':
     # Initialize variables
-    sta_type = StationType.LAA_BS
+    sta_type = StationType.LAA_UE
     p_tx = 17
     freq = 5250
     band = 20

@@ -22,9 +22,9 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         par.shadow_enabled = False
         par.same_building_enabled = True
         par.diffraction_enabled = False
-        par.bs_building_entry_loss_type = 'FIXED_VALUE'
-        par.bs_building_entry_loss_prob = 0.5
-        par.bs_building_entry_loss_value = 50
+        par.ap_building_entry_loss_type = 'FIXED_VALUE'
+        par.ap_building_entry_loss_prob = 0.5
+        par.ap_building_entry_loss_value = 50
         self.propagation = PropagationHDFSSRoofTop(par,rnd)
         
         # Propagation with fixed BEL
@@ -34,9 +34,9 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         par.shadow_enabled = False
         par.same_building_enabled = True
         par.diffraction_enabled = False
-        par.bs_building_entry_loss_type = 'FIXED_VALUE'
-        par.bs_building_entry_loss_prob = 0.6
-        par.bs_building_entry_loss_value = 50
+        par.ap_building_entry_loss_type = 'FIXED_VALUE'
+        par.ap_building_entry_loss_prob = 0.6
+        par.ap_building_entry_loss_value = 50
         self.propagation_fixed_value = PropagationHDFSSRoofTop(par,rnd)
         
         # Propagation with fixed probability
@@ -46,9 +46,9 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         par.shadow_enabled = False
         par.same_building_enabled = True
         par.diffraction_enabled = False
-        par.bs_building_entry_loss_type = 'P2109_FIXED'
-        par.bs_building_entry_loss_prob = 0.6
-        par.bs_building_entry_loss_value = 50
+        par.ap_building_entry_loss_type = 'P2109_FIXED'
+        par.ap_building_entry_loss_prob = 0.6
+        par.ap_building_entry_loss_value = 50
         self.propagation_fixed_prob = PropagationHDFSSRoofTop(par,rnd)
         
         # Propagation with random probability
@@ -58,9 +58,9 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         par.shadow_enabled = False
         par.same_building_enabled = True
         par.diffraction_enabled = False
-        par.bs_building_entry_loss_type = 'P2109_RANDOM'
-        par.bs_building_entry_loss_prob = 0.6
-        par.bs_building_entry_loss_value = 50
+        par.ap_building_entry_loss_type = 'P2109_RANDOM'
+        par.ap_building_entry_loss_prob = 0.6
+        par.ap_building_entry_loss_value = 50
         self.propagation_random_prob = PropagationHDFSSRoofTop(par,rnd)
         
         # Same building disabled
@@ -70,9 +70,9 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         par.shadow_enabled = False
         par.same_building_enabled = False
         par.diffraction_enabled = False
-        par.bs_building_entry_loss_type = 'FIXED_VALUE'
-        par.bs_building_entry_loss_prob = 0.5
-        par.bs_building_entry_loss_value = 50
+        par.ap_building_entry_loss_type = 'FIXED_VALUE'
+        par.ap_building_entry_loss_prob = 0.5
+        par.ap_building_entry_loss_value = 50
         self.propagation_same_build_disabled = PropagationHDFSSRoofTop(par,rnd)
         
         # Diffraction loss enabled
@@ -82,9 +82,9 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         par.shadow_enabled = False
         par.same_building_enabled = True
         par.diffraction_enabled = True
-        par.bs_building_entry_loss_type = 'FIXED_VALUE'
-        par.bs_building_entry_loss_prob = 0.5
-        par.bs_building_entry_loss_value = 50
+        par.ap_building_entry_loss_type = 'FIXED_VALUE'
+        par.ap_building_entry_loss_prob = 0.5
+        par.ap_building_entry_loss_value = 50
         self.propagation_diff_enabled = PropagationHDFSSRoofTop(par,rnd)
         
     def test_get_loss(self):
@@ -96,10 +96,10 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         loss = self.propagation.get_loss(distance_3D=d,
                                          frequency=f,
                                          elevation=ele,
-                                         imt_sta_type=StationType.IMT_BS,
-                                         imt_x = 100.0*np.ones(7),
-                                         imt_y = 100.0*np.ones(7),
-                                         imt_z = 100.0*np.ones(7),
+                                         rlan_sta_type=StationType.RLAN_AP,
+                                         rlan_x = 100.0*np.ones(7),
+                                         rlan_y = 100.0*np.ones(7),
+                                         rlan_z = 100.0*np.ones(7),
                                          es_x = np.array([0.0]),
                                          es_y = np.array([0.0]),
                                          es_z = np.array([0.0]))
@@ -116,17 +116,17 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         es_x = np.array([0.0])
         es_y = np.array([0.0])
         es_z = np.array([10.0])
-        imt_x = np.array([ 0.0, 20.0, 30.0])
-        imt_y = np.array([10.0,  0.0,  0.0])
-        imt_z = np.array([ 1.5,  6.0,  7.5])
+        rlan_x = np.array([ 0.0, 20.0, 30.0])
+        rlan_y = np.array([10.0,  0.0,  0.0])
+        rlan_z = np.array([ 1.5,  6.0,  7.5])
         
         loss = self.propagation.get_loss(distance_3D=d,
                                          frequency=f,
                                          elevation=ele,
-                                         imt_sta_type=StationType.IMT_BS,
-                                         imt_x=imt_x,
-                                         imt_y=imt_y,
-                                         imt_z=imt_z,
+                                         rlan_sta_type=StationType.RLAN_AP,
+                                         rlan_x=rlan_x,
+                                         rlan_y=rlan_y,
+                                         rlan_z=rlan_z,
                                          es_x=es_x,
                                          es_y=es_y,
                                          es_z=es_z)
@@ -140,7 +140,7 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         # Initialize variables
         ele = np.array([[ 0.0, 45.0, 90.0]])
         f = 40000*np.ones_like(ele)
-        sta_type = StationType.IMT_BS
+        sta_type = StationType.RLAN_AP
         
         # Test 1: fixed value
         expected_build_loss = 50.0
@@ -164,7 +164,7 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         npt.assert_allclose(build_loss,expected_build_loss,atol=1e-1)
         
         # Test 4: UE station
-        sta_type = StationType.IMT_UE
+        sta_type = StationType.RLAN_UE
         expected_build_loss = np.array([[21.7, 32.9, 15.9]])
         build_loss = self.propagation_fixed_value.get_building_loss(sta_type,
                                                                     f,
@@ -185,19 +185,19 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         es_x = np.array([0.0])
         es_y = np.array([0.0])
         es_z = np.array([19.0])
-        imt_x = np.array([1.0, 0.0,80.0,-70.0,12.0])
-        imt_y = np.array([1.0,30.0, 0.0,-29.3,-3.6])
-        imt_z = 3*np.ones_like(imt_x)
+        rlan_x = np.array([1.0, 0.0,80.0,-70.0,12.0])
+        rlan_y = np.array([1.0,30.0, 0.0,-29.3,-3.6])
+        rlan_z = 3*np.ones_like(rlan_x)
         
         expected_in_build = np.array([True,False,False,False,True])
-        in_build = self.propagation_same_build_disabled.is_same_building(imt_x,
-                                                                        imt_y,
+        in_build = self.propagation_same_build_disabled.is_same_building(rlan_x,
+                                                                        rlan_y,
                                                                         es_x,
                                                                         es_y)
         npt.assert_array_equal(in_build,expected_in_build)
         
         # Test loss
-        d = np.sqrt(np.power(imt_x,2) + np.power(imt_y,2))
+        d = np.sqrt(np.power(rlan_x,2) + np.power(rlan_y,2))
         d = np.array([list(d)])
         f = 40000*np.ones_like(d)
         ele = np.transpose(np.zeros_like(d))
@@ -205,10 +205,10 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         loss = self.propagation_same_build_disabled.get_loss(distance_3D=d,
                                                              frequency=f,
                                                              elevation=ele,
-                                                             imt_sta_type=StationType.IMT_BS,
-                                                             imt_x=imt_x,
-                                                             imt_y=imt_y,
-                                                             imt_z=imt_z,
+                                                             rlan_sta_type=StationType.RLAN_AP,
+                                                             rlan_x=rlan_x,
+                                                             rlan_y=rlan_y,
+                                                             rlan_z=rlan_z,
                                                              es_x=es_x,
                                                              es_y=es_y,
                                                              es_z=es_z)
@@ -221,14 +221,14 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         es_x = np.array([10.0])
         es_y = np.array([15.0])
         es_z = np.array([19.0])
-        imt_x = np.array([ 80.0, 50.0, 10.0,-80.0,  0.0])
-        imt_y = np.array([ 15.0, 55.0, 95.0, 15.0,-40.0])
-        imt_z = np.array([  1.5,  3.0,  6.0,  7.5, 20.5])
+        rlan_x = np.array([ 80.0, 50.0, 10.0,-80.0,  0.0])
+        rlan_y = np.array([ 15.0, 55.0, 95.0, 15.0,-40.0])
+        rlan_z = np.array([  1.5,  3.0,  6.0,  7.5, 20.5])
         
         # 2D distances
-        distances = self.propagation.get_diff_distances(imt_x,
-                                                        imt_y, 
-                                                        imt_z, 
+        distances = self.propagation.get_diff_distances(rlan_x,
+                                                        rlan_y, 
+                                                        rlan_z, 
                                                         es_x, 
                                                         es_y, 
                                                         es_z, 
@@ -238,9 +238,9 @@ class PropagationHDFSSRoofTopTest(unittest.TestCase):
         npt.assert_allclose(distances,expected_distances,atol=1e-1)
         
         # 3D distances
-        distances = self.propagation.get_diff_distances(imt_x,
-                                                        imt_y, 
-                                                        imt_z, 
+        distances = self.propagation.get_diff_distances(rlan_x,
+                                                        rlan_y, 
+                                                        rlan_z, 
                                                         es_x, 
                                                         es_y, 
                                                         es_z)
