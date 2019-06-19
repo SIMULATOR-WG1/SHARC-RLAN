@@ -56,9 +56,10 @@ class AntennaRadar(Antenna):
         
         return results_ag
 
-    def calculate_gain(self, angle, tetha):
-        #phi = np.absolute(kwargs["off_axis_angle_vec"])
-        
+#    def calculate_gain(self, tetha):
+    def calculate_gain(self, *args, **kwargs) -> np.array:
+        tetha = np.absolute(kwargs["off_axis_angle_vec"])
+        angle = AntennaRadar.calculate_angle(self)
         gain = np.zeros(tetha.shape)
         
         rn_gain= self.r_gain
@@ -118,8 +119,8 @@ if __name__ == '__main__':
     param27.antenna_gain = 40
     param27.diameter = 5
     antenna27 = AntennaRadar(param27)
-    resultado_angle27 = antenna27.calculate_angle()
-    gain27 = antenna27.calculate_gain(resultado_angle27,tetha)
+#    resultado_angle27 = antenna27.calculate_angle()
+    gain27 = antenna27.calculate_gain(tetha)
 
 
     #Plotting...
