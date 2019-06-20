@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Apr 14 14:13:58 2017
+Created on Thu Jun 13 12:11:32 2019
 
-@author: Calil
+@author: Jussif
 """
 
 import numpy as np
@@ -12,7 +12,7 @@ from sharc.support.named_tuples import AntennaPar
 
 class AntennaElementAeromaxF1336(object):
     """
-    Implements a single element of an RLAN antenna array following ITU-R F.1336-4, item 3.1.1
+    Implements a single element of an Aeromax antenna array following ITU-R F.1336-4, item 3.1.1
     using parameters from ITU-R M2292
 
     Attributes
@@ -26,7 +26,7 @@ class AntennaElementAeromaxF1336(object):
 
     def __init__(self,par: AntennaPar):
         """
-        Constructs an AntennaElementRlan object.
+        Constructs an AntennaElementAeromaxF1336 object.
 
         Parameters
         ---------
@@ -72,13 +72,13 @@ class AntennaElementAeromaxF1336(object):
         -------
             a_h (np.array): horizontal radiation pattern gain value
         """
-        #x_h = abs(phi)/self.phi_deg_3db
-        #if x_h < 0.5:
-        #gain = -12 * x_h ** 2
-        gain = np.zeros(np.size(phi))
-        #else:
-        #    gain = -12 * x_h ** (2 - self.k_h) - self.lambda_k_h
-        #gain = max(gain, self.g_hr_180)
+        x_h = abs(phi)/self.phi_deg_3db
+        if x_h < 0.5:
+            gain = -12 * x_h ** 2
+#        gain = np.zeros(np.size(phi))
+        else:
+            gain = -12 * x_h ** (2 - self.k_h) - self.lambda_k_h
+        gain = max(gain, self.g_hr_180)
 
         return gain
 
@@ -98,17 +98,18 @@ class AntennaElementAeromaxF1336(object):
         theta3 = 27
         x_v = abs(theta)/theta3
 
-        #if x_v.any() < self.x_k:
-        #    gain = -12 * x_v ** 2
-        #elif x_v.any() < 4:
-        #gain = -12 + 10*np.log10(x_v**-1.5 + self.k_v)
-        gain1 = 6 - 12 * x_v**2
-        gain2 = 6 - 12 + 10*np.log10(max(abs(x_v).all(),1)**-1.5 + self.k_v)
-        #elif x_v.any() < 90 / self.theta_deg_3db:
-        #    gain = - self.lambda_k_v - self.incline_factor * np.log10(x_v)
-        #else:
-        # gain = self.g_hr_180
-        gain = np.fmax(gain1,gain2)
+        if x_v.any() < self.x_k:
+            gain = -12 * x_v ** 2
+        elif x_v.any() < 4:
+            gain = -12 + 10*np.log10(x_v**-1.5 + self.k_v)
+#        gain1 = 6 - 12 * x_v**2
+#        gain2 = 6 - 12 + 10*np.log10(max(abs(x_v).all(),1)**-1.5 + self.k_v)
+        elif x_v.any() < 90 / self.theta_deg_3db:
+            gain = - self.lambda_k_v - self.incline_factor * np.log10(x_v)
+        else:
+            gain = self.g_hr_180
+            
+#        gain = np.fmax(gain1,gain2)
 
         return gain
 
@@ -135,16 +136,16 @@ class AntennaElementAeromaxF1336(object):
                 np.cos(theta_rad) * np.cos(phi_rad) * np.cos(self.downtilt_rad))/np.cos(new_theta_rad)
 
         # to avoid numerical errors, as sometimes cosines are slightly out of bounds
-#        if cos > 1:
-#            cos = 1
-#        elif cos < -1:
-#            cos = -1
+        if cos > 1:
+            cos = 1
+        elif cos < -1:
+            cos = -1
 
         phi_rad = np.arccos(cos)
         theta = new_theta_rad / np.pi * 180
         phi = phi_rad / np.pi * 180
 
-        #theta = theta - self.downtilt_rad * 180 / np.pi
+        theta = theta - self.downtilt_rad * 180 / np.pi
         gain_hor = self.horizontal_pattern(phi)
         compression_ratio = (gain_hor - self.g_hr_180)/(self.g_hr_0 - self.g_hr_180)
         gain = gain_hor + compression_ratio * self.vertical_pattern(theta)
@@ -162,10 +163,10 @@ if __name__ == '__main__':
     param.element_phi_deg_3db = 360
     param.element_theta_deg_3db = 90
 
-    # 0 degrees tilt
+    #************************x degrees tilt = 0**************************#
     param.downtilt_deg = 0
 
-    antenna = AntennaElementRlanF1336( param )
+    antenna = AntennaElementAeromaxF1336( param )
 
     phi_vec = np.arange(-180,180, step = 5)
     theta_vec = np.arange(0,90, step = 3)
@@ -219,9 +220,9 @@ if __name__ == '__main__':
 
     plt.legend()
 
-    # x degrees tilt
+    #************************x degrees tilt = 10**************************#
     param.downtilt_deg = 10
-    antenna = AntennaElementRlanF1336(param)
+    antenna = AntennaElementAeromaxF1336(param)
 
     for phi, index in zip(phi_vec, range(len(phi_vec))):
         pattern_hor_0deg[index] = antenna.element_pattern(phi, 0)
