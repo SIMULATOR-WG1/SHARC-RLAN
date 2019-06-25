@@ -63,28 +63,28 @@ if __name__ == '__main__':
     param27 = ParametersFssEs()
     param27.antenna_pattern = "ITU-R S.580-6"
     param27.frequency = 5.100
-    param27.antenna_gain = 35
-    param27.diameter = 5
+    param27.antenna_gain = 40
+    param27.diameter = 2.4
     antenna27 = AntennaS580_rlan(param27)
-    gain27 = antenna27.calculate_gain(phi_vec=phi)
+    gainEM = antenna27.calculate_gain(phi_vec=phi)
 
-    """
+    
     #Test 2, AMT IPEV
     param = ParametersFssEs()
     param.antenna_pattern = "ITU-R S.580-6"
     param.frequency = 5.100
     param.antenna_gain = 30
-    param.diameter = 5
+    param.diameter = 2.4
     antenna = AntennaS580_rlan(param)
-    gain = antenna.calculate_gain(phi_vec=phi)
-    """
+    gainIP = antenna.calculate_gain(phi_vec=phi)
+    
     
     #Plotting...
     fig = plt.figure(figsize=(8,7), facecolor='w', edgecolor='k')  # create a figure object
 
-    plt.semilogx(phi, gain27, "-g", label = "without antenna gain substraction")
-    plt.semilogx(phi, gain27 - param27.antenna_gain, "-b", label = "$f = 5.100$ $GHz,$ $D = 5$ $m$")
-    #plt.semilogx(phi, gain - param.antenna_gain, "-r", label = "$f = 5.100$ $GHz,$ $D = 0.45$ $m$")
+    plt.semilogx(phi, gainEM, "-g", label = "EMBRAER")
+    plt.semilogx(phi, gainIP, "-r", label = "IPEV")
+#    plt.semilogx(phi, gainEM - param27.antenna_gain, "-b", label = "$f = 5.100$ $GHz,$ $D = 5$ $m$")
 
     plt.title("ITU-R S.580 antenna radiation pattern for RLAN")
     plt.xlabel("Off-axis angle $\phi$ [deg]")

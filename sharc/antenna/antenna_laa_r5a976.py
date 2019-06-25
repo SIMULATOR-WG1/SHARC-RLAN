@@ -39,7 +39,7 @@ class AntennaElementLaar5a(object):
         self.downtilt_rad = par.downtilt_deg / 180 * np.pi
         self.downtilt_deg = par.downtilt_deg 
         self.phi_deg_3db = par.element_phi_deg_3db
-        self.sla= par.sla_v
+        self.sla= par.element_sla_v
         
         if par.element_theta_deg_3db > 0:
             self.theta_deg_3db = par.element_theta_deg_3db
@@ -151,15 +151,18 @@ if __name__ == '__main__':
     param.element_max_g = 5
     param.element_phi_deg_3db = 3.5
     param.element_theta_deg_3db = 40
-    param.sla_v= 20
+    param.element_sla_v= 20
 
     #************************* x degrees tilt = -10 **************************#
     param.downtilt_deg = -10
 
     antenna = AntennaElementLaar5a( param )
 
-    phi_vec = np.arange(-180,180, step = 5)
-    theta_vec = np.arange(0,90, step = 3)
+#    phi_vec = np.arange(-180,180, step = 5)
+#    theta_vec = np.arange(0,90, step = 3)
+    
+    phi_vec = np.arange(-180,180, step = 40)
+    theta_vec = np.arange(0,90, step = 5)
 
     #variables for:
     #horizontal pattern

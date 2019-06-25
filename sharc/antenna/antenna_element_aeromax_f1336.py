@@ -168,11 +168,11 @@ if __name__ == '__main__':
 
     antenna = AntennaElementAeromaxF1336( param )
 
-#    phi_vec = np.arange(-180,180, step = 5)
-#    theta_vec = np.arange(0,90, step = 3)
+    phi_vec = np.arange(-180,180, step = 5)
+    theta_vec = np.arange(0,90, step = 3)
     
-    phi_vec = np.arange(-180,180, step = 40)
-    theta_vec = np.arange(0,90, step = 5)
+#    phi_vec = np.arange(-180,180, step = 40)
+#    theta_vec = np.arange(0,90, step = 5)
 
     pattern_hor_0deg = np.zeros(phi_vec.shape)
     pattern_hor_10deg = np.zeros(phi_vec.shape)
