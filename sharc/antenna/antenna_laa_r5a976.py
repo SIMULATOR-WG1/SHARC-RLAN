@@ -124,20 +124,16 @@ class AntennaElementLaar5a(object):
         cos = (-np.sin(theta_rad) * np.sin(self.downtilt_rad) +
                 np.cos(theta_rad) * np.cos(phi_rad) * np.cos(self.downtilt_rad))/np.cos(new_theta_rad)
 
-        # to avoid numerical errors, as sometimes cosines are slightly out of bounds
-#        if cos > 1:
-#            cos = 1
-#        elif cos < -1:
-#            cos = -1
 
         phi_rad = np.arccos(cos)
         theta = new_theta_rad / np.pi * 180
         phi = phi_rad / np.pi * 180
 
-        #theta = theta - self.downtilt_rad * 180 / np.pi
         gain_hor = self.horizontal_pattern(phi)
         compression_ratio = (gain_hor - self.g_hr_180)/(self.g_hr_0 - self.g_hr_180)
         gain = gain_hor + compression_ratio * self.vertical_pattern(theta)
+        
+#        gain = self.vertical_pattern(theta)
         
         return gain
 
@@ -149,7 +145,7 @@ if __name__ == '__main__':
     param = ParametersAntennaRlan()
 
     param.element_max_g = 5
-    param.element_phi_deg_3db = 3.5
+    param.element_phi_deg_3db = 40
     param.element_theta_deg_3db = 40
     param.element_sla_v= 20
 
@@ -158,9 +154,6 @@ if __name__ == '__main__':
 
     antenna = AntennaElementLaar5a( param )
 
-#    phi_vec = np.arange(-180,180, step = 5)
-#    theta_vec = np.arange(0,90, step = 3)
-    
     phi_vec = np.arange(-180,180, step = 40)
     theta_vec = np.arange(0,90, step = 5)
 
@@ -217,6 +210,11 @@ if __name__ == '__main__':
     plt.title('downtilt = -10 degrees')
     plt.xlabel('elevation (degrees)')
     plt.ylabel('gain (dBi)')
+    
+    ax = plt.gca()
+    ax.set_xticks(np.arange(0, 90, step=10))
+    ax.legend()
+    
     plt.grid()
     plt.legend()
 

@@ -25,7 +25,7 @@ class AntennaS580_rlan(Antenna):
            self.phi_min = 100 * lmbda / param.diameter
 
     def calculate_gain(self, *args, **kwargs) -> np.array:
-#        phi = np.absolute(kwargs["off_axis_angle_vec"])
+        phi = np.absolute(kwargs["off_axis_angle_vec"])
 
         gain = np.zeros(phi.shape)
 
@@ -55,14 +55,14 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
     #phi = np.linspace(0.1, 100, num = 100000)
-    phi = np.linspace(2, 180, num = 100000) 
+    phi = np.linspace(2, 90, num = 100000) 
 
     # initialize antenna 
     
     #Test 1, AMT EMBRAER
     param27 = ParametersFssEs()
     param27.antenna_pattern = "ITU-R S.580-6"
-    param27.frequency = 5.100
+    param27.frequency = 5100
     param27.antenna_gain = 40
     param27.diameter = 2.4
     antenna27 = AntennaS580_rlan(param27)
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     #Test 2, AMT IPEV
     param = ParametersFssEs()
     param.antenna_pattern = "ITU-R S.580-6"
-    param.frequency = 5.100
+    param.frequency = 5100
     param.antenna_gain = 30
     param.diameter = 2.4
     antenna = AntennaS580_rlan(param)
@@ -91,11 +91,30 @@ if __name__ == '__main__':
     plt.ylabel("Gain relative to $G_m$ [dB]")
     plt.legend(loc="lower left")
     plt.xlim((phi[0], phi[-1]))
-    plt.ylim((-80, 80))
+#    plt.ylim((-80, 80))
 
-    #ax = plt.gca()
-    #ax.set_yticks([-30, -20, -10, 0])
-    #ax.set_xticks(np.linspace(1, 9, 9).tolist() + np.linspace(10, 100, 10).tolist())
+    ay = plt.gca()
+    ay.set_yticks(np.arange(-30, 60, step=10))
+    ay.legend()
+    plt.grid()
+
+    #phi in degrees
+
+    fig = plt.figure(figsize=(8,7), facecolor='w', edgecolor='k')  # create a figure object
+
+    plt.plot(phi, gainEM, "-g", label = "EMBRAER")
+    plt.plot(phi, gainIP, "-r", label = "IPEV")
+
+    plt.title("ITU-R S.580 antenna radiation pattern for RLAN")
+    plt.xlabel("Off-axis angle $\phi$ [deg]")
+    plt.ylabel("Gain relative to $G_m$ [dB]")
+    plt.legend(loc="upper right")
+
+#    ay = plt.gca()
+#    ay.set_yticks(np.arange(-30, 60, step=10))
+#    ax = plt.gca()
+#    ax.set_xticks(np.arange(0, 90, step=10))
+#    ax.legend()
 
     plt.grid()
     plt.show()

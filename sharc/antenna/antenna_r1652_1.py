@@ -115,8 +115,8 @@ if __name__ == '__main__':
     #Test 1, Radar
     param27 = ParametersFssEs()
     param27.antenna_pattern = "ITU-R M.1652-1"
-    param27.frequency = 5.100
-    param27.antenna_gain = 40
+    param27.frequency = 5100
+    param27.antenna_gain = 35
     param27.diameter = 5
     antenna27 = AntennaRadar(param27)
 #    resultado_angle27 = antenna27.calculate_angle()
