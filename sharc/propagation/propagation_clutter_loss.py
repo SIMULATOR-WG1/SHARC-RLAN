@@ -149,9 +149,9 @@ if __name__ == '__main__':
 
     elevation_angle = np.array([90, 80, 70, 60, 50, 40, 30, 20, 15, 10, 5, 0])
     loc_percentage = np.linspace(0, 1, 1001)
-    frequency = 27250 * np.ones(elevation_angle.shape)
+    frequency = 5170 * np.ones(elevation_angle.shape)
 
-    cl = PropagationClutterLoss()
+    cl = PropagationClutterLoss(5)
     clutter_loss = np.empty([len(elevation_angle), len(loc_percentage)])
 
     for i in range(len(loc_percentage)):

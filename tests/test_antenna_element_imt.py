@@ -15,7 +15,7 @@ class AntennaImtTest(unittest.TestCase):
 
     def setUp(self):
         #Element parameters
-        self.param = ParametersAntennaImt()
+        self.param = ParametersAntennaRlan()
 
         self.param.bs_element_pattern = "M2101"
         self.param.ue_element_pattern = "M2101"
@@ -65,10 +65,10 @@ class AntennaImtTest(unittest.TestCase):
         self.param.ue_rx_element_vert_spacing = 0.5
 
         # Create antenna IMT objects
-        par = self.param.get_antenna_parameters("BS","TX")
-        self.antenna1 = AntennaElementImtM2101(par)
+        par = self.param.get_antenna_parameters("AP","TX")
+        self.antenna1 = AntennaElementRlan2101(par)
         par = self.param.get_antenna_parameters("UE","RX")
-        self.antenna2 = AntennaElementImtM2101(par)
+        self.antenna2 = AntennaElementRlan2101(par)
 
     def test_g_max(self):
         self.assertEqual(self.antenna1.g_max,5)

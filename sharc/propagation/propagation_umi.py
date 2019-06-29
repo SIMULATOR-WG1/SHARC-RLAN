@@ -3,6 +3,7 @@
 Created on Mon Jul  3 10:29:47 2017
 
 @author: LeticiaValle_Mac
+Modified for V2X project on Jul 10 by Carlos Rodriguez
 """
 
 from sharc.propagation.propagation import Propagation
@@ -12,8 +13,7 @@ import numpy as np
 class PropagationUMi(Propagation):
     """
     Implements the Urban Micro path loss model (Street Canyon) with LOS probability according
-    to 3GPP TR 38.900 v14.2.0.
-    TODO: calculate the effective environment height for the generic case
+    to 3GPP TR 38.901 v15.0
     """
 
     def get_loss(self, *args, **kwargs) -> np.array:
@@ -26,7 +26,7 @@ class PropagationUMi(Propagation):
             distance_3D (np.array) : 3D distances between stations
             distance_2D (np.array) : 2D distances between stations
             frequency (np.array) : center frequencie [MHz]
-            ap_height (np.array) : base station antenna heights
+            bs_height (np.array) : base station antenna heights
             ue_height (np.array) : user equipment antenna heights
             shadowing (bool) : if shadowing should be added or not
 
@@ -38,8 +38,8 @@ class PropagationUMi(Propagation):
         d_3D = kwargs["distance_3D"]
         d_2D = kwargs["distance_2D"]
         f = kwargs["frequency"]
-        h_ap = kwargs["ap_height"]
-        h_ue = kwargs["ue_height"]
+        h_rsu = kwargs["ap_height"]
+        h_v = kwargs["ue_height"]
         h_e = np.ones(d_2D.shape)
         std = kwargs["shadowing"]
 
@@ -59,11 +59,11 @@ class PropagationUMi(Propagation):
         loss = np.empty(d_2D.shape)
 
         if len(i_los[0]):
-            loss_los = self.get_loss_los(d_2D, d_3D, f, h_ap, h_ue, h_e, shadowing_los)
+            loss_los = self.get_loss_los(d_2D, d_3D, f, h_rsu, h_v, h_e, shadowing_los)
             loss[i_los] = loss_los[i_los]
 
         if len(i_nlos[0]):
-            loss_nlos = self.get_loss_nlos(d_2D, d_3D, f, h_ap, h_ue, h_e, shadowing_nlos)
+            loss_nlos = self.get_loss_nlos(d_2D, d_3D, f, h_rsu, h_v, h_e, shadowing_nlos)
             loss[i_nlos] = loss_nlos[i_nlos]
 
         return loss
@@ -71,7 +71,7 @@ class PropagationUMi(Propagation):
 
     def get_loss_los(self, distance_2D: np.array, distance_3D: np.array,
                      frequency: np.array,
-                     h_ap: np.array, h_ue: np.array, h_e: np.array,
+                     h_bs: np.array, h_ue: np.array, h_e: np.array,
                      shadowing_std=4):
         """
         Calculates path loss for the LOS (line-of-sight) case.
@@ -83,10 +83,10 @@ class PropagationUMi(Propagation):
             distance_3D : array of 3D distances between base stations and user
                           equipments [m]
             frequency : center frequency [MHz]
-            h_ap : array of base stations antenna heights [m]
+            h_bs : array of base stations antenna heights [m]
             h_ue : array of user equipments antenna heights [m]
         """
-        breakpoint_distance = self.get_breakpoint_distance(frequency, h_ap, h_ue, h_e)
+        breakpoint_distance = self.get_breakpoint_distance(frequency, h_bs, h_ue, h_e)
 
         # get index where distance if less than breakpoint
         idl = np.where(distance_2D < breakpoint_distance)
@@ -100,7 +100,7 @@ class PropagationUMi(Propagation):
             loss[idl] = 21*np.log10(distance_3D[idl]) + 20*np.log10(frequency[idl]) - 27.55
 
         if len(idg[0]):
-            fitting_term = -9.5*np.log10(breakpoint_distance**2 +(h_ap[:,np.newaxis] - h_ue)**2)
+            fitting_term = -9.5*np.log10(breakpoint_distance**2 +(h_bs[:,np.newaxis] - h_ue)**2)
             loss[idg] = 40*np.log10(distance_3D[idg]) + 20*np.log10(frequency[idg]) - 27.55 \
                 + fitting_term[idg]
 
@@ -114,7 +114,7 @@ class PropagationUMi(Propagation):
 
     def get_loss_nlos(self, distance_2D: np.array, distance_3D: np.array,
                      frequency: np.array,
-                     h_ap: np.array, h_ue: np.array, h_e: np.array,
+                     h_bs: np.array, h_ue: np.array, h_e: np.array,
                      shadowing_std=7.82):
         """
         Calculates path loss for the NLOS (non line-of-sight) case.
@@ -126,7 +126,7 @@ class PropagationUMi(Propagation):
             distance_3D : array of 3D distances between base stations and user
                           equipments [m]
             frequency : center frequency [MHz]
-            h_ap : array of base stations antenna heights [m]
+            h_bs : array of base stations antenna heights [m]
             h_ue : array of user equipments antenna heights [m]        """
         loss_nlos = -37.55 + 35.3*np.log10(distance_3D) + 21.3*np.log10(frequency) \
                         - 0.3*(h_ue - 1.5)
@@ -134,7 +134,7 @@ class PropagationUMi(Propagation):
         idl = np.where(distance_2D < 5000)
         if len(idl[0]):
             loss_los = self.get_loss_los(distance_2D, distance_3D,
-                 frequency, h_ap, h_ue, h_e, 0)
+                 frequency, h_bs, h_ue, h_e, 0)
             loss_nlos[idl] = np.maximum(loss_los[idl], loss_nlos[idl])
 
         if shadowing_std:
@@ -146,14 +146,14 @@ class PropagationUMi(Propagation):
 
 
 
-    def get_breakpoint_distance(self, frequency: float, h_ap: np.array, h_ue: np.array, h_e: np.array) -> float:
+    def get_breakpoint_distance(self, frequency: float, h_bs: np.array, h_ue: np.array, h_e: np.array) -> float:
         """
         Calculates the breakpoint distance for the LOS (line-of-sight) case.
 
         Parameters
         ----------
             frequency : centre frequency [MHz]
-            h_ap : array of actual base station antenna height [m]
+            h_bs : array of actual base station antenna height [m]
             h_ue : array of actual user equipment antenna height [m]
             h_e : array of effective environment height [m]
 
@@ -162,11 +162,11 @@ class PropagationUMi(Propagation):
             array of breakpoint distances [m]
         """
         #  calculate the effective antenna heights
-        h_ap_eff = h_ap[:,np.newaxis] - h_e
+        h_bs_eff = h_bs[:,np.newaxis] - h_e
         h_ue_eff = h_ue - h_e
 
         # calculate the breakpoint distance
-        breakpoint_distance = 4*h_ap_eff*h_ue_eff*(frequency*1e6)/(3e8)
+        breakpoint_distance = 4*h_bs_eff*h_ue_eff*(frequency*1e6)/(3e8)
         return breakpoint_distance
 
 
@@ -247,13 +247,13 @@ if __name__ == '__main__':
     shadowing_std = 0
     distance_2D = np.linspace(1, 1000, num=1000)[:,np.newaxis]
     freq = 27000*np.ones(distance_2D.shape)
-    h_ap = 25*np.ones(len(distance_2D[:,0]))
+    h_bs = 25*np.ones(len(distance_2D[:,0]))
     h_ue = 1.5*np.ones(len(distance_2D[0,:]))
     h_e = np.zeros(distance_2D.shape)
-    distance_3D = np.sqrt(distance_2D**2 + (h_ap[:,np.newaxis] - h_ue)**2)
+    distance_3D = np.sqrt(distance_2D**2 + (h_bs[:,np.newaxis] - h_ue)**2)
 
-    loss_los = umi.get_loss_los(distance_2D, distance_3D, freq, h_ap, h_ue, h_e, shadowing_std)
-    loss_nlos = umi.get_loss_nlos(distance_2D, distance_3D, freq, h_ap, h_ue, h_e, shadowing_std)
+    loss_los = umi.get_loss_los(distance_2D, distance_3D, freq, h_bs, h_ue, h_e, shadowing_std)
+    loss_nlos = umi.get_loss_nlos(distance_2D, distance_3D, freq, h_bs, h_ue, h_e, shadowing_std)
     loss_fs = PropagationFreeSpace().get_loss(distance_2D=distance_2D, frequency=freq)
 
     fig = plt.figure(figsize=(8,6), facecolor='w', edgecolor='k')

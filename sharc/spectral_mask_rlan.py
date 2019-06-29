@@ -52,7 +52,7 @@ class SpectralMaskRlan(SpectralMask):
             scenario (str): INDOOR or OUTDOOR scenario
         """
         # Spurious domain limits [dBm/MHz]
-        self.spurious_emissions = -36
+        self.spurious_emissions = -29
         # Mask delta f breaking limits [MHz]
         self.delta_f_lim = np.array([0,0, 3, 41, 81])
         
@@ -90,7 +90,7 @@ class SpectralMaskRlan(SpectralMask):
 if __name__ == '__main__':
     # Initialize variables
     sta_type = StationType.RLAN_UE
-    p_tx = 29.03  #in dBm for RLAN Wifi is 800 mw (10*log(800)= 29.03)
+    p_tx = 30.03  #in dBm for RLAN Wifi is 800 mw (10*log(800)= 29.03)
     freq = 5210
     band = 80
     

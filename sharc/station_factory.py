@@ -34,6 +34,7 @@ from sharc.antenna.antenna_m1466 import AntennaM1466
 from sharc.antenna.antenna_s465 import AntennaS465
 from sharc.antenna.antenna_modified_s465 import AntennaModifiedS465
 from sharc.antenna.antenna_s580 import AntennaS580
+from sharc.antenna.antenna_s580_rlan import AntennaS580_rlan
 from sharc.antenna.antenna_s672 import AntennaS672
 from sharc.antenna.antenna_s1528 import AntennaS1528
 from sharc.antenna.antenna_s1855 import AntennaS1855
@@ -90,11 +91,11 @@ class StationFactory(object):
         rlan_access_points.noise_figure = param.ap_noise_figure*np.ones(num_ap)
         rlan_access_points.thermal_noise = -500*np.ones(num_ap)
 
-        if param.spectral_mask == "ITU 265-E":
+        if param.spectral_mask == "RLAN":
             rlan_access_points.spectral_mask = SpectralMaskRlan(StationType.RLAN_AP,param.frequency,\
                                                               param.bandwidth,scenario = param.topology)
-        elif param.spectral_mask == "3GPP 36.104":
-            rlan_access_points.spectral_mask = SpectralMask3Gpp(StationType.RLAN_AP,param.frequency,\
+        elif param.spectral_mask == "LAA":
+            rlan_access_points.spectral_mask = SpectralMaskLaa(StationType.RLAN_AP,param.frequency,\
                                                                param.bandwidth)
             
         if param.topology == 'MACROCELL' or param.topology == 'HOTSPOT':
@@ -234,12 +235,12 @@ class StationFactory(object):
         rlan_ue.center_freq = param.frequency*np.ones(num_ue)
         rlan_ue.noise_figure = param.ue_noise_figure*np.ones(num_ue)
 
-        if param.spectral_mask == "ITU 265-E":
+        if param.spectral_mask == "RLAN":
             rlan_ue.spectral_mask = SpectralMaskRlan(StationType.RLAN_UE,param.frequency,\
                                                    param.bandwidth,scenario = "OUTDOOR")
 
-        elif param.spectral_mask == "3GPP 36.104":
-            rlan_ue.spectral_mask = SpectralMask3Gpp(StationType.RLAN_UE,param.frequency,\
+        elif param.spectral_mask == "LAA":
+            rlan_ue.spectral_mask = SpectralMaskLaa(StationType.RLAN_UE,param.frequency,\
                                                    param.bandwidth)
 
         rlan_ue.spectral_mask.set_mask()
@@ -354,12 +355,12 @@ class StationFactory(object):
         rlan_ue.center_freq = param.frequency*np.ones(num_ue)
         rlan_ue.noise_figure = param.ue_noise_figure*np.ones(num_ue)
 
-        if param.spectral_mask == "ITU 265-E":
+        if param.spectral_mask == "RLAN":
             rlan_ue.spectral_mask = SpectralMaskRlan(StationType.RLAN_UE,param.frequency,\
                                                    param.bandwidth,scenario = "INDOOR")
 
-        elif param.spectral_mask == "3GPP 36.104":
-            rlan_ue.spectral_mask = SpectralMask3Gpp(StationType.RLAN_UE,param.frequency,\
+        elif param.spectral_mask == "LAA":
+            rlan_ue.spectral_mask = SpectralMaskLaa(StationType.RLAN_UE,param.frequency,\
                                                    param.bandwidth)
 
         rlan_ue.spectral_mask.set_mask()
@@ -581,8 +582,8 @@ class StationFactory(object):
             amt_ground_station.antenna = np.array([AntennaS465(param)])
         elif param.antenna_pattern.upper() == "MODIFIED ITU-R S.465":
             amt_ground_station.antenna = np.array([AntennaModifiedS465(param)])
-        elif param.antenna_pattern.upper() == "ITU-R S.580":
-            amt_ground_station.antenna = np.array([AntennaS580(param)])
+        elif param.antenna_pattern.upper() == "ITU-R S.580 RLAN":
+            amt_ground_station.antenna = np.array([AntennaS580_rlan(param)])
         else:
             sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
             sys.exit(1)

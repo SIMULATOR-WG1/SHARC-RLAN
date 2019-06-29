@@ -191,6 +191,10 @@ class Simulation(ABC, Observable):
              station_b.station_type is StationType.RLAN_UE and \
              self.parameters.rlan.topology == "INDOOR":
             elevation_angles = np.transpose(station_b.get_elevation(station_a))
+        elif station_a.station_type is StationType.RLAN_AP and \
+             station_b.station_type is StationType.RLAN_UE and \
+             self.parameters.rlan.topology == "HOTSPOT":
+            elevation_angles = np.transpose(station_b.get_elevation(station_a))
         elif station_a.station_type is StationType.FSS_ES or \
             station_a.station_type is StationType.RAS or \
             station_a.station_type is StationType.RDR_GS or \
