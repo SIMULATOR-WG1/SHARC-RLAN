@@ -274,6 +274,7 @@ class Simulation(ABC, Observable):
             self.system_rlan_antenna_gain = gain_a
             self.rlan_system_antenna_gain = gain_b
             self.rlan_system_path_loss = path_loss
+
         # RLAN <-> RLAN
         else:
             d_2D = self.ap_to_ue_d_2D
@@ -374,7 +375,7 @@ class Simulation(ABC, Observable):
         if(station_1.station_type is StationType.RLAN_AP):
             if(station_2.station_type is StationType.RLAN_UE):
                 phi = self.ap_to_ue_phi
-                theta = self.ap_to_ue_theta
+                theta = self.ap_to_ue_theta - 90
                 beams_idx = self.ap_to_ue_beam_rbs[station_2_active]
             elif(station_2.station_type is StationType.FSS_SS or \
                  station_2.station_type is StationType.FSS_ES or \
@@ -393,6 +394,7 @@ class Simulation(ABC, Observable):
 
         elif(station_1.station_type is StationType.RLAN_UE):
             phi, theta = station_1.get_pointing_vector_to(station_2)
+            theta = 90 - theta
             beams_idx = np.zeros(len(station_2_active),dtype=int)
 
         elif(station_1.station_type is StationType.FSS_SS or \

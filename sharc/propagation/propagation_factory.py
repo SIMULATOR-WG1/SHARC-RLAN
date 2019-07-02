@@ -52,8 +52,6 @@ class PropagationFactory(object):
         elif channel_model == "INDOOR":
             return PropagationIndoor(random_number_gen, param.indoor, 
                                      param.rlan.ue_k*param.rlan.ue_k_m)
-        elif channel_model == "INH_OFFICE":
-            return PropagationInhOffice(random_number_gen)
         else:
             sys.stderr.write("ERROR\nInvalid channel_model: " + channel_model)
             sys.exit(1)

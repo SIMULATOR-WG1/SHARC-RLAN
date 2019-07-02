@@ -36,8 +36,8 @@ class PropagationHDFSSRoofTop(Propagation):
         self.los_to_nlos_dist = 260
         
         # Building dimentions
-        self.b_w = 120
-        self.b_d = 50
+        self.b_w = 1#120
+        self.b_d = 1#50
         self.b_tol = 0.05
         
         self.HIGH_LOSS = 4000
