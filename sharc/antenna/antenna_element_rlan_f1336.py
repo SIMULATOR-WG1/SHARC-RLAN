@@ -100,8 +100,8 @@ class AntennaElementRlanF1336(object):
         #if x_v.any() < self.x_k:
         #    gain = -12 * x_v ** 2
         #elif x_v.any() < 4:
-        gain1 = 6 - 12 * x_v**2
-        gain2 = 6 - 12 + 10*np.log10(max(abs(x_v).all(),1)**-1.5 + self.k_v)
+        gain1 =  - 12 * x_v**2
+        gain2 =  - 12 + 10*np.log10(max(abs(x_v).all(),1)**-1.5 + self.k_v)
         #elif x_v.any() < 90 / self.theta_deg_3db:
         #    gain = - self.lambda_k_v - self.incline_factor * np.log10(x_v)
         #else:
@@ -141,7 +141,7 @@ class AntennaElementRlanF1336(object):
         theta = new_theta_rad / np.pi * 180
         phi = phi_rad / np.pi * 180
 
-        #theta = theta - self.downtilt_rad * 180 / np.pi
+        theta = theta - self.downtilt_rad * 180 / np.pi
         gain_hor = self.horizontal_pattern(phi)
         compression_ratio = (gain_hor - self.g_hr_180)/(self.g_hr_0 - self.g_hr_180)
         gain = gain_hor + compression_ratio * self.vertical_pattern(theta)
@@ -155,12 +155,12 @@ if __name__ == '__main__':
 
     param = ParametersAntennaRlan()
 
-    param.element_max_g = 34
-    param.element_phi_deg_3db = 3.5
-    param.element_theta_deg_3db = 3.5
+    param.element_max_g = 1
+    param.element_phi_deg_3db = 360
+    param.element_theta_deg_3db = 90
 
     # 30 degrees tilt
-    param.downtilt_deg = 30
+    param.downtilt_deg = 10
 
     antenna = AntennaElementRlanF1336( param )
 
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     plt.legend()
 
     # x degrees tilt
-    param.downtilt_deg = 10
+    param.downtilt_deg = 0
     antenna = AntennaElementRlanF1336(param)
 
     for phi, index in zip(phi_vec, range(len(phi_vec))):
