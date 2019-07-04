@@ -60,6 +60,7 @@ class StationFactory(object):
         rlan_access_points.y = topology.y
         rlan_access_points.azimuth = topology.azimuth
         rlan_access_points.elevation = topology.elevation
+        rlan_access_points.indoor = random_number_gen.random_sample(num_ap) >= 0
         if param.topology == 'INDOOR':
             rlan_access_points.height = topology.height
         else:
@@ -270,7 +271,7 @@ class StationFactory(object):
         rlan_ue.indoor = np.ones(num_ue, dtype=bool)
 
         # Calculate UE pointing
-        azimuth_range = (-60, 60)
+        azimuth_range = (-180, 180)
         azimuth = (azimuth_range[1] - azimuth_range[0])*random_number_gen.random_sample(num_ue) + azimuth_range[0]
         # Remove the randomness from azimuth and you will have a perfect pointing
         #azimuth = np.zeros(num_ue)
