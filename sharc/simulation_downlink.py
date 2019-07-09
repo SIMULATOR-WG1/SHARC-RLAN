@@ -269,8 +269,6 @@ class SimulationDownlink(Simulation):
                 self.results.system_rlan_antenna_gain.extend(self.system_rlan_antenna_gain[0,active_beams])
                 self.results.rlan_system_antenna_gain.extend(self.rlan_system_antenna_gain[0,active_beams])
                 self.results.rlan_system_path_loss.extend(self.rlan_system_path_loss[0,active_beams])
-                if self.rlan_system_path_loss[0,active_beams]>300:
-                    a = 1
                     
                 if self.param_system.channel_model == "HDFSS":
                     self.results.rlan_system_build_entry_loss.extend(self.rlan_system_build_entry_loss[:,ap])
