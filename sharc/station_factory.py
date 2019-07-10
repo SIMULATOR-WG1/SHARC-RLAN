@@ -381,7 +381,7 @@ class StationFactory(object):
         if parameters.general.system == "AMAX_CPE":
             return StationFactory.generate_aeromax_cpe_station(parameters.amax_cpe, random_number_gen, topology)
         if parameters.general.system == "RDR_GS":
-            return StationFactory.generate_amt_ground_station(parameters.rdr_gs, random_number_gen, topology)
+            return StationFactory.generate_radar_ground_station(parameters.rdr_gs, random_number_gen, topology)
         elif parameters.general.system == "FSS_SS":
             return StationFactory.generate_fss_space_station(parameters.fss_ss)
         elif parameters.general.system == "FS":
@@ -661,7 +661,7 @@ class StationFactory(object):
         elif param.antenna_pattern.upper() == "ITU-R S.580":
             radar_ground_station.antenna = np.array([AntennaS580(param)])
         else:
-            sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
+            sys.stderr.write("ERROR\nInvalid RDR GS antenna pattern: " + param.antenna_pattern)
             sys.exit(1)
 
         radar_ground_station.noise_temperature = param.noise_temperature
