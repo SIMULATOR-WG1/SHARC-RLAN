@@ -501,6 +501,9 @@ class Parameters(object):
         self.amax_bs.line_of_sight_prob = config.getfloat("AMAX_BS", "line_of_sight_prob")
         self.amax_bs.BOLTZMANN_CONSTANT = config.getfloat("AMAX_BS", "BOLTZMANN_CONSTANT")
         self.amax_bs.EARTH_RADIUS = config.getfloat("AMAX_BS", "EARTH_RADIUS")
+        self.amax_bs.downtilt_deg = config.getfloat("AMAX_BS", "downtilt_deg")
+        self.amax_bs.element_phi_deg_3db  = config.getfloat("AMAX_BS", "amax_phi_deg_3db")
+        self.amax_bs.element_theta_deg_3db = config.getfloat("AMAX_BS", "amax_theta_deg_3db")
 
         # P452 parameters
         self.amax_bs.atmospheric_pressure = config.getfloat("AMAX_BS", "atmospheric_pressure")
@@ -553,6 +556,9 @@ class Parameters(object):
         self.amax_cpe.line_of_sight_prob = config.getfloat("AMAX_CPE", "line_of_sight_prob")
         self.amax_cpe.BOLTZMANN_CONSTANT = config.getfloat("AMAX_CPE", "BOLTZMANN_CONSTANT")
         self.amax_cpe.EARTH_RADIUS = config.getfloat("AMAX_CPE", "EARTH_RADIUS")
+        self.amax_cpe.downtilt_deg = config.getfloat("AMAX_CPE", "downtilt_deg")
+        self.amax_cpe.element_phi_deg_3db  = config.getfloat("AMAX_CPE", "amax_phi_deg_3db")
+        self.amax_cpe.element_theta_deg_3db = config.getfloat("AMAX_CPE", "amax_theta_deg_3db")
 
         # P452 parameters
         self.amax_cpe.atmospheric_pressure = config.getfloat("AMAX_CPE", "atmospheric_pressure")

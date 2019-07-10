@@ -39,6 +39,7 @@ from sharc.antenna.antenna_s672 import AntennaS672
 from sharc.antenna.antenna_s1528 import AntennaS1528
 from sharc.antenna.antenna_s1855 import AntennaS1855
 from sharc.antenna.antenna_sa509 import AntennaSA509
+from sharc.antenna.antenna_element_aeromax_f1336 import AntennaElementAeromaxF1336
 from sharc.antenna.antenna_beamforming_rlan import AntennaBeamformingRlan
 from sharc.topology.topology import Topology
 from sharc.topology.topology_macrocell import TopologyMacrocell
@@ -376,9 +377,9 @@ class StationFactory(object):
         if parameters.general.system == "AMT_GS":
             return StationFactory.generate_amt_ground_station(parameters.amt_gs, random_number_gen, topology)
         if parameters.general.system == "AMAX_BS":
-            return StationFactory.generate_amt_ground_station(parameters.amax_bs, random_number_gen, topology)
+            return StationFactory.generate_aeromax_base_station(parameters.amax_bs, random_number_gen, topology)
         if parameters.general.system == "AMAX_CPE":
-            return StationFactory.generate_amt_ground_station(parameters.amax_cpe, random_number_gen, topology)
+            return StationFactory.generate_aeromax_cpe_station(parameters.amax_cpe, random_number_gen, topology)
         if parameters.general.system == "RDR_GS":
             return StationFactory.generate_amt_ground_station(parameters.rdr_gs, random_number_gen, topology)
         elif parameters.general.system == "FSS_SS":
@@ -611,7 +612,7 @@ class StationFactory(object):
         if len(args): topology = args[0]
 
         radar_ground_station = StationManager(1)
-        radar_ground_station.station_type = StationType.AMT_GS
+        radar_ground_station.station_type = StationType.RDR_GS
 
         if param.location.upper() == "FIXED":
             radar_ground_station.x = np.array([param.x])
@@ -684,7 +685,7 @@ class StationFactory(object):
         if len(args): topology = args[0]
 
         aeromax_base_station = StationManager(1)
-        aeromax_base_station.station_type = StationType.AMT_GS
+        aeromax_base_station.station_type = StationType.AMAX_BS
 
         if param.location.upper() == "FIXED":
             aeromax_base_station.x = np.array([param.x])
@@ -732,8 +733,10 @@ class StationFactory(object):
             aeromax_base_station.antenna = np.array([AntennaModifiedS465(param)])
         elif param.antenna_pattern.upper() == "ITU-R S.580":
             aeromax_base_station.antenna = np.array([AntennaS580(param)])
+        elif param.antenna_pattern.upper() == "F1336":
+            aeromax_base_station.antenna = np.array([AntennaElementAeromaxF1336(param)])
         else:
-            sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
+            sys.stderr.write("ERROR\nInvalid AMAX BS antenna pattern: " + param.antenna_pattern)
             sys.exit(1)
 
         aeromax_base_station.noise_temperature = param.noise_temperature
@@ -757,7 +760,7 @@ class StationFactory(object):
         if len(args): topology = args[0]
 
         aeromax_cpe_station = StationManager(1)
-        aeromax_cpe_station.station_type = StationType.AMT_GS
+        aeromax_cpe_station.station_type = StationType.AMAX_CPE
 
         if param.location.upper() == "FIXED":
             aeromax_cpe_station.x = np.array([param.x])
@@ -805,8 +808,11 @@ class StationFactory(object):
             aeromax_cpe_station.antenna = np.array([AntennaModifiedS465(param)])
         elif param.antenna_pattern.upper() == "ITU-R S.580":
             aeromax_cpe_station.antenna = np.array([AntennaS580(param)])
+        elif param.antenna_pattern.upper() == "F1336":
+            aeromax_cpe_station.antenna = np.array([AntennaElementAeromaxF1336(param)])
+
         else:
-            sys.stderr.write("ERROR\nInvalid FSS ES antenna pattern: " + param.antenna_pattern)
+            sys.stderr.write("ERROR\nInvalid AMAX CPE antenna pattern: " + param.antenna_pattern)
             sys.exit(1)
 
         aeromax_cpe_station.noise_temperature = param.noise_temperature
