@@ -15,7 +15,7 @@ class PropagationP1411(Propagation):
     
     Frequency in MHz and distance in meters!
     """
-    def __init__(self, random_number_gen: np.random.RandomState, above_clutter = True):
+    def __init__(self, random_number_gen: np.random.RandomState, above_clutter = False):
         super().__init__(random_number_gen)
         
         if above_clutter:

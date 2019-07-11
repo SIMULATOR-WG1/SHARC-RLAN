@@ -44,10 +44,10 @@ class Propagation1411I412(Propagation):
         loss = np.zeros(Rbp.size)
         
         if len(i_d_Rbp[0]):
-            loss = Lbp + 20*np.log10(dist/Rbp)
+            loss = Lbp + 6 + 20*np.log10(dist/Rbp)
         
         if len(i_d_Rbp2[0]):
-            loss = Lbp + 40*np.log10(dist/Rbp)      
+            loss = Lbp + 6 + 40*np.log10(dist/Rbp)      
 
         if number_of_sectors > 1:
             loss = np.repeat(loss, number_of_sectors, 1)
