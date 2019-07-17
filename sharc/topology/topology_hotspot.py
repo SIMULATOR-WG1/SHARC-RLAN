@@ -30,7 +30,7 @@ class TopologyHotspot(Topology):
     AZIMUTH = [0, 90, 180, 270]
 
     # Posible values for base station elevation [degrees]
-    ELEVATION = -10
+    ELEVATION = 0
 
     # Maximum number of tentatives when creating hotspots and checking if they overlap
     MAX_NUM_LOOPS = 1000

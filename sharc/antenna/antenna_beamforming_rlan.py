@@ -133,7 +133,8 @@ class AntennaBeamformingRlan(Antenna):
         """
         phi_vec = np.asarray(kwargs["phi_vec"])
         theta_vec = np.asarray(kwargs["theta_vec"])
-        if("co_channel" in kwargs.keys()): co_channel = kwargs["co_channel"]
+        if("co_channel" in kwargs.keys()): co_channel = True#kwargs["co_channel"]
+            
         else: co_channel = True
         if("beams_l" in kwargs.keys()): 
             beams_l = np.asarray(kwargs["beams_l"],dtype=int)
@@ -250,10 +251,10 @@ class AntennaBeamformingRlan(Antenna):
 
         element_g = self.element.element_pattern(phi,theta)
 
-        v_vec = self._super_position_vector(phi,theta)
+        v_vec = self._super_position_vector(phi,theta+90)
 
         if(beam == -1):
-            w_vec = self._weight_vector(phi,theta-90)
+            w_vec = self._weight_vector(phi,theta+90)
             array_g = 10*np.log10(abs(np.sum(np.multiply(v_vec,w_vec)))**2)
         else:
             array_g = 10*np.log10(abs(np.sum(np.multiply(v_vec,\
@@ -302,8 +303,8 @@ class PlotAntennaPattern(object):
 
     def plot_element_pattern(self,antenna: AntennaBeamformingRlan, sta_type: str, antenna_type: str, plot_type: str):
 
-        phi_escan = 45
-        theta_tilt = 120
+        phi_escan = 9
+        theta_tilt = 3
 
         # Plot horizontal pattern
         phi = np.linspace(-180, 180, num = 360)
@@ -335,7 +336,7 @@ class PlotAntennaPattern(object):
         ax1.set_xlim(-180, 180)
 
         # Plot vertical pattern
-        theta = np.linspace(0, 180, num = 360)
+        theta = np.linspace(-180, 180, num = 360)
         phi = phi_escan*np.ones(np.size(theta))
 
         if plot_type == "ELEMENT":
@@ -357,7 +358,7 @@ class PlotAntennaPattern(object):
         elif plot_type == "ARRAY":
             ax2.set_title("RLAN " + sta_type + " vertical antenna pattern")
 
-        ax2.set_xlim(0, 180)
+        ax2.set_xlim(-180, 180)
         if(np.max(gain) > top_y_lim): top_y_lim = np.ceil(np.max(gain)/10)*10
         ax2.set_ylim(top_y_lim - 60,top_y_lim)
 
@@ -399,7 +400,7 @@ if __name__ == '__main__':
     param.ap_tx_n_columns        = 4
     param.ap_tx_element_horiz_spacing = 0.5
     param.ap_tx_element_vert_spacing = 0.5
-    param.ap_downtilt_deg = 0
+    param.ap_downtilt_deg = -10
 
     param.ue_element_pattern = "F1336"
     param.ue_tx_element_max_g    = 0
@@ -408,7 +409,7 @@ if __name__ == '__main__':
     param.ue_tx_element_am       = 25
     param.ue_tx_element_sla_v    = 25
     param.ue_tx_n_rows           = 1
-    param.ue_tx_n_columns        = 2
+    param.ue_tx_n_columns        = 4
     param.ue_tx_element_horiz_spacing = 0.5
     param.ue_tx_element_vert_spacing = 0.5
 
