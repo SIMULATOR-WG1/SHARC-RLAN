@@ -100,8 +100,9 @@ class AntennaBeamformingRlan(Antenna):
             theta_etilt (float): elevation electrical tilt angle [degrees]
         """
         phi, theta = self.to_local_coord(phi_etilt, theta_etilt)
-        self.beams_list.append((np.asscalar(phi), np.asscalar(theta-90)))
-        self.w_vec_list.append(self._weight_vector(phi, theta-90))
+        
+        self.beams_list.append((np.asscalar(phi), np.asscalar(theta)))
+        self.w_vec_list.append(self._weight_vector(phi, theta))
         
         if self.normalize:
             lin = int(phi/self.resolution)
@@ -303,8 +304,8 @@ class PlotAntennaPattern(object):
 
     def plot_element_pattern(self,antenna: AntennaBeamformingRlan, sta_type: str, antenna_type: str, plot_type: str):
 
-        phi_escan = 9
-        theta_tilt = 3
+        phi_escan = 45
+        theta_tilt = 30
 
         # Plot horizontal pattern
         phi = np.linspace(-180, 180, num = 360)
@@ -318,7 +319,7 @@ class PlotAntennaPattern(object):
                                           theta_vec = theta,
                                           beams_l = np.zeros_like(phi, dtype=int))
 
-        top_y_lim = np.ceil(np.max(gain)/10)*10
+        top_y_lim = 1+np.ceil(np.max(gain)/10)*10
 
         fig = plt.figure(figsize=(15,5), facecolor='w', edgecolor='k')
         ax1 = fig.add_subplot(121)
@@ -396,11 +397,11 @@ if __name__ == '__main__':
     param.ap_tx_element_theta_deg_3db = 90
     param.ap_tx_element_am       = 25
     param.ap_tx_element_sla_v    = 25
-    param.ap_tx_n_rows           = 1
-    param.ap_tx_n_columns        = 4
+    param.ap_tx_n_rows           = 64
+    param.ap_tx_n_columns        = 64
     param.ap_tx_element_horiz_spacing = 0.5
     param.ap_tx_element_vert_spacing = 0.5
-    param.ap_downtilt_deg = -10
+    param.ap_downtilt_deg = 0
 
     param.ue_element_pattern = "F1336"
     param.ue_tx_element_max_g    = 0
@@ -409,7 +410,7 @@ if __name__ == '__main__':
     param.ue_tx_element_am       = 25
     param.ue_tx_element_sla_v    = 25
     param.ue_tx_n_rows           = 1
-    param.ue_tx_n_columns        = 4
+    param.ue_tx_n_columns        = 2
     param.ue_tx_element_horiz_spacing = 0.5
     param.ue_tx_element_vert_spacing = 0.5
 

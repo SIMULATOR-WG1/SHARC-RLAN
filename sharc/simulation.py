@@ -342,7 +342,7 @@ class Simulation(ABC, Observable):
                 for ue in self.link[ap]:
                     # add beam to AP antennas
                     self.ap.antenna[ap].add_beam(self.ap_to_ue_phi[ap,ue],
-                                             self.ap_to_ue_theta[ap,ue])
+                                             self.ap_to_ue_theta[ap,ue]-90)
                     # add beam to UE antennas
                     self.ue.antenna[ue].add_beam(self.ap_to_ue_phi[ap,ue] - 180,
                                              180 - self.ap_to_ue_theta[ap,ue])
@@ -389,14 +389,14 @@ class Simulation(ABC, Observable):
                  station_2.station_type is StationType.RNS or \
                  station_2.station_type is StationType.RAS):
                 phi, theta = station_1.get_pointing_vector_to(station_2)
-                theta = theta - 90
+                theta = 90 - theta
                 phi = np.repeat(phi,self.parameters.rlan.ue_k,0)
                 theta = np.repeat(theta,self.parameters.rlan.ue_k,0)
                 beams_idx = np.tile(np.arange(self.parameters.rlan.ue_k),self.ap.num_stations)
 
         elif(station_1.station_type is StationType.RLAN_UE):
             phi, theta = station_1.get_pointing_vector_to(station_2)
-            theta = theta - 90
+            theta = 90 - theta
             beams_idx = np.zeros(len(station_2_active),dtype=int)
 
         elif(station_1.station_type is StationType.FSS_SS or \
