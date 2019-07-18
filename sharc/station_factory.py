@@ -25,6 +25,7 @@ from sharc.parameters.parameters_rns import ParametersRns
 from sharc.parameters.parameters_ras import ParametersRas
 from sharc.station_manager import StationManager
 from sharc.spectral_mask_rlan import SpectralMaskRlan
+from sharc.spectral_mask_laa import SpectralMaskLaa
 from sharc.antenna.antenna import Antenna
 from sharc.antenna.antenna_fss_ss import AntennaFssSs
 from sharc.antenna.antenna_omni import AntennaOmni

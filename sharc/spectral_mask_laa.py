@@ -73,7 +73,7 @@ class SpectralMaskLaa(SpectralMask):
         self.p_tx = power - 10*np.log10(self.band_mhz)
         
         # Set new transmit power value       
-        if self.sta_type is StationType.LAA_UE:
+        if self.sta_type is StationType.RLAN_UE:
             # Table 6.6.2.2.6-1  form TS.36.101
                    
            mask_dbm = np.ones_like(self.delta_f_lim)
@@ -89,7 +89,7 @@ class SpectralMaskLaa(SpectralMask):
                    mask_dbm[j] = -30 
                j = j+1
                           
-        elif self.sta_type is StationType.LAA_BS :             
+        elif self.sta_type is StationType.RLAN_AP:             
             # Table 6.6.3.2D-1  form TS.36.104
             # Formulas are valido for dBm/100KHz
            mask_dbm = np.ones_like(self.delta_f_lim)
