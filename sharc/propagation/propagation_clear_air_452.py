@@ -744,14 +744,16 @@ class PropagationClearAir(Propagation):
         tx_lat = es_params.tx_lat
         rx_lat = es_params.rx_lat
 
-        Gt = np.ravel(np.asarray(kwargs["tx_gain"]))
-        Gr = np.ravel(np.asarray(kwargs["rx_gain"]))
+        Gt_array = np.ravel(np.asarray(kwargs["tx_gain"]))
+        Gr_array = np.ravel(np.asarray(kwargs["rx_gain"]))
 
         # Modify the path according to Section 4.5.4, Step 1  and compute clutter losses
         # consider no obstacles profile
         profile_length = 100
         num_dists = d_km.size
         d = np.empty([num_dists, profile_length])
+        Gt = np.empty([num_dists])+Gt_array
+        Gr = np.empty([num_dists])+Gr_array
         for ii in range(num_dists):
             d[ii, :] = np.linspace(0,d_km[0][ii],profile_length)
 
@@ -901,7 +903,7 @@ class PropagationClearAir(Propagation):
         if es_params.clutter_loss:
             clutter_loss = self.clutter.get_loss(frequency=f * 1000,
                                                  distance=d_km * 1000,
-                                                 station_type=StationType.FSS_ES)
+                                                 station_type=StationType.AMT_GS)
         else:
             clutter_loss = np.zeros(d_km.shape)
 
@@ -914,7 +916,7 @@ class PropagationClearAir(Propagation):
             clutter_loss = np.repeat(clutter_loss, number_of_sectors, 1)
             building_loss = np.repeat(building_loss, number_of_sectors, 1)
 
-        Lb_new = Lb + clutter_loss + building_loss
+        Lb_new = Lb + clutter_loss #+ building_loss
 
         return Lb_new
 

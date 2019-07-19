@@ -52,7 +52,7 @@ class PropagationClutterLoss(Propagation):
         else:
             p = loc_per*np.ones(d.shape)
 
-        if type is StationType.RLAN_AP or type is StationType.RLAN_UE or type is StationType.FSS_ES:
+        if type is StationType.RLAN_AP or type is StationType.RLAN_UE or type is StationType.AMT_GS:
             loss = self.get_terrestrial_clutter_loss(f, d, p)
         else:
             theta = kwargs["elevation"]
@@ -165,7 +165,7 @@ if __name__ == '__main__':
     for j in range(len(elevation_angle)):
         ax.plot(clutter_loss[j, :], 100 * loc_percentage, label="%i deg" % elevation_angle[j], linewidth=1)
 
-    plt.title("Cumulative distribution of clutter loss not exceeded for 27 GHz")
+    plt.title("Cumulative distribution of clutter loss not exceeded for 5 GHz")
     plt.xlabel("clutter loss [dB]")
 
     plt.ylabel("percent of locations [%]")
@@ -178,7 +178,7 @@ if __name__ == '__main__':
     distance = np.linspace(250, 100000, 100000)
     frequency = np.array([2, 3, 6, 16, 40, 67]) * 1e3
 
-    loc_percentage = 0.5 * np.ones(distance.shape)
+    loc_percentage = 0.05 * np.ones(distance.shape)
     apply_both_ends = False
 
     clutter_loss_ter = np.empty([len(frequency), len(distance)])
@@ -191,7 +191,7 @@ if __name__ == '__main__':
 
     fig = plt.figure(figsize=(8, 6), facecolor='w', edgecolor='k')
     ax = fig.gca()
-    # ax.set_prop_cycle( cycler('color', ['k', 'r', 'b', 'g']) )
+    #ax.set_prop_cycle( cycler('color', ['k', 'r', 'b', 'g']) )
 
     for j in range(len(frequency)):
         freq = frequency[j] * 1e-3
