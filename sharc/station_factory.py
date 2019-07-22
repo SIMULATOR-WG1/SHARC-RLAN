@@ -35,6 +35,7 @@ from sharc.antenna.antenna_m1466 import AntennaM1466
 from sharc.antenna.antenna_s465 import AntennaS465
 from sharc.antenna.antenna_modified_s465 import AntennaModifiedS465
 from sharc.antenna.antenna_s580 import AntennaS580
+from sharc.antenna.antenna_r1652_1 import AntennaRadar
 from sharc.antenna.antenna_s580_rlan import AntennaS580_rlan
 from sharc.antenna.antenna_s672 import AntennaS672
 from sharc.antenna.antenna_s1528 import AntennaS1528
@@ -661,6 +662,8 @@ class StationFactory(object):
             radar_ground_station.antenna = np.array([AntennaModifiedS465(param)])
         elif param.antenna_pattern.upper() == "ITU-R S.580":
             radar_ground_station.antenna = np.array([AntennaS580(param)])
+        elif param.antenna_pattern.upper() == "ITU-R R.1652-1":
+            radar_ground_station.antenna = np.array([AntennaRadar(param)])
         else:
             sys.stderr.write("ERROR\nInvalid RDR GS antenna pattern: " + param.antenna_pattern)
             sys.exit(1)
