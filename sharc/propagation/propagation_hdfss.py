@@ -9,6 +9,7 @@ import numpy as np
 import sys
 
 from sharc.parameters.parameters_fss_es import ParametersFssEs
+from sharc.parameters.parameters_amt_gs import ParametersAmtGs
 from sharc.propagation.propagation import Propagation
 from sharc.propagation.propagation_hdfss_roof_top import PropagationHDFSSRoofTop
 from sharc.propagation.propagation_hdfss_building_side import PropagationHDFSSBuildingSide
@@ -17,7 +18,7 @@ class PropagationHDFSS(Propagation):
     """
     
     """
-    def __init__(self, param: ParametersFssEs, rnd_num_gen: np.random.RandomState):
+    def __init__(self, param: ParametersAmtGs, rnd_num_gen: np.random.RandomState):
         """
         
         """

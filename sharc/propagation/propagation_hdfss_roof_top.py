@@ -10,8 +10,10 @@ import sys
 from shapely.geometry import LineString, Polygon, Point
 
 from sharc.parameters.parameters_fss_es import ParametersFssEs
+from sharc.parameters.parameters_amt_gs import ParametersAmtGs
 from sharc.propagation.propagation import Propagation
 from sharc.propagation.propagation_p1411 import PropagationP1411
+from sharc.propagation.propagation_clear_air_452 import PropagationClearAir
 from sharc.propagation.propagation_free_space import PropagationFreeSpace
 from sharc.propagation.propagation_building_entry_loss import PropagationBuildingEntryLoss
 from sharc.support.enumerations import StationType
@@ -25,7 +27,7 @@ class PropagationHDFSSRoofTop(Propagation):
         P.1411 LOS for distances 55m < distance < 260m
         P.1411 NLOS for distances distance > 260m
     """
-    def __init__(self, param: ParametersFssEs, random_number_gen: np.random.RandomState):
+    def __init__(self, param: ParametersAmtGs, random_number_gen: np.random.RandomState):
         super().__init__(random_number_gen)
         
         self.param = param
@@ -34,6 +36,7 @@ class PropagationHDFSSRoofTop(Propagation):
         self.fspl_to_los_dist = 55
         self.los_dist = 100
         self.los_to_nlos_dist = 260
+        self.los_p452 = 1200
         
         # Building dimentions
         self.b_w = 1#120
@@ -45,6 +48,7 @@ class PropagationHDFSSRoofTop(Propagation):
         
         self.propagation_fspl = PropagationFreeSpace(random_number_gen)
         self.propagation_p1411 = PropagationP1411(random_number_gen)
+        self.propagation_p452 = PropagationClearAir(random_number_gen)
         self.building_entry = PropagationBuildingEntryLoss(self.random_number_gen)
         
         self.SPEED_OF_LIGHT = 299792458.0
@@ -102,7 +106,10 @@ class PropagationHDFSSRoofTop(Propagation):
         los_to_nlos_bool = np.logical_and(d > self.los_dist,
                                           d <= self.los_to_nlos_dist)
         
-        nlos_bool = d > self.los_to_nlos_dist
+        nlos_bool = np.logical_and(d > self.los_to_nlos_dist,
+                                d <= self.los_p452)
+        
+        los_p452_bool = d > self.los_p452
         
         # Define indexes
         same_build_idx = np.where(same_build)[0]
@@ -111,6 +118,7 @@ class PropagationHDFSSRoofTop(Propagation):
         los_idx = np.where(los_bool)[1]
         los_to_nlos_idx = np.where(los_to_nlos_bool)[1]
         nlos_idx = np.where(nlos_bool)[1]
+        los_p452_idx = np.where(los_p452_bool)[1]
         
         # Path loss
         loss = np.zeros_like(d)
@@ -137,7 +145,14 @@ class PropagationHDFSSRoofTop(Propagation):
                                                             frequency=f[:,nlos_idx],
                                                             los=False,
                                                             shadow=self.param.shadow_enabled)
-    
+        loss[:,los_p452_idx] += self.propagation_p452.get_loss(distance_3D=d[:,los_p452_idx],
+                                                           frequency=f[:,los_p452_idx],
+                                                           los=True,
+                                                           shadow=self.param.shadow_enabled,
+                                                           elevation = elevation,
+                                                           es_params =self.param,
+                                                           tx_gain=self.param.antenna_gain,
+                                                           rx_gain=self.param.antenna_gain)
         # Building entry loss
         if self.param.building_loss_enabled:
             build_loss = np.zeros_like(loss)
