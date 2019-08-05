@@ -16,6 +16,7 @@ from sharc.propagation.propagation_p1411 import PropagationP1411
 from sharc.propagation.propagation_clear_air_452 import PropagationClearAir
 from sharc.propagation.propagation_free_space import PropagationFreeSpace
 from sharc.propagation.propagation_building_entry_loss import PropagationBuildingEntryLoss
+from sharc.propagation.propagation_clutter_loss import PropagationClutterLoss
 from sharc.support.enumerations import StationType
 
 class PropagationHDFSSRoofTop(Propagation):
@@ -52,6 +53,7 @@ class PropagationHDFSSRoofTop(Propagation):
         self.building_entry = PropagationBuildingEntryLoss(self.random_number_gen)
         
         self.SPEED_OF_LIGHT = 299792458.0
+        self.clutter = PropagationClutterLoss(random_number_gen)
         
     def get_loss(self, *args, **kwargs) -> np.array:
         """
@@ -162,6 +164,10 @@ class PropagationHDFSSRoofTop(Propagation):
         else:
             build_loss = 0.0
             
+        clutter_loss = self.clutter.get_loss(frequency=f,
+                                                 distance=d,
+                                                 station_type=StationType.AMT_GS)
+            
         # Diffraction loss
         diff_loss = np.zeros_like(loss)
         if self.param.diffraction_enabled:
@@ -174,7 +180,7 @@ class PropagationHDFSSRoofTop(Propagation):
                                                                     f[:,not_same_build])
                 
         # Compute final loss
-        loss = loss + build_loss + diff_loss
+        loss = loss + build_loss + diff_loss + clutter_loss
         
         if number_of_sectors > 1:
             loss = np.repeat(loss, number_of_sectors, 1)

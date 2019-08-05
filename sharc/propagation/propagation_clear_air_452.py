@@ -916,7 +916,7 @@ class PropagationClearAir(Propagation):
             clutter_loss = np.repeat(clutter_loss, number_of_sectors, 1)
             building_loss = np.repeat(building_loss, number_of_sectors, 1)
 
-        Lb_new = Lb + clutter_loss #+ building_loss
+        Lb_new = Lb #+ clutter_loss #+ building_loss
 
         return Lb_new
 
