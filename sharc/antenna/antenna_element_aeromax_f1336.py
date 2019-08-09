@@ -94,18 +94,16 @@ class AntennaElementAeromaxF1336(object):
             a_v (np.array): vertical radiation pattern gain value
         """
         
-        theta3 = 27
+        theta3 = self.theta_deg_3db #27
         x_v = abs(theta)/theta3
 
         if x_v.any() < self.x_k:
             gain = -12 * x_v ** 2
-        elif x_v.any() < 4:
+        elif (x_v.any() >= self.x_k) and (x_v.any() < 4):
             gain = -12 + 10*np.log10(x_v**-1.5 + self.k_v)
-#        gain1 = 6 - 12 * x_v**2
-#        gain2 = 6 - 12 + 10*np.log10(max(abs(x_v).all(),1)**-1.5 + self.k_v)
-        elif x_v.any() < 90 / self.theta_deg_3db:
+        elif (x_v.any() >= 4) and (x_v < 90 / self.theta_deg_3db):
             gain = - self.lambda_k_v - self.incline_factor * np.log10(x_v)
-        else:
+        elif x_v == (90 / self.theta_deg_3db):
             gain = self.g_hr_180
             
 #        gain = np.fmax(gain1,gain2)
@@ -158,7 +156,7 @@ if __name__ == '__main__':
 
     param = ParametersAntennaRlan()
 
-    param.antenna_gain = 0
+    param.antenna_gain = 6
     param.element_phi_deg_3db = 360
     param.element_theta_deg_3db = 90
 
