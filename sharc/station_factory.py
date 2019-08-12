@@ -232,7 +232,7 @@ class StationFactory(object):
         par = param_ant.get_antenna_parameters("UE","TX")
         for i in range(num_ue):
             rlan_ue.antenna[i] = AntennaBeamformingRlan(par, rlan_ue.azimuth[i],
-                                                           rlan_ue.elevation[i])
+                                                           rlan_ue.elevation[i],param.rlan_type)
 
         #rlan_ue.antenna = [AntennaOmni(0) for ap in range(num_ue)]
         rlan_ue.bandwidth = param.bandwidth*np.ones(num_ue)
