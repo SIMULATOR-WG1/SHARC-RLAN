@@ -87,7 +87,7 @@ class StationFactory(object):
         for i in range(num_ap):
             rlan_access_points.antenna[i] = \
             AntennaBeamformingRlan(par, rlan_access_points.azimuth[i],\
-                                  rlan_access_points.elevation[i])
+                                  rlan_access_points.elevation[i], param.rlan_type)
 
         #rlan_access_points.antenna = [AntennaOmni(0) for ap in range(num_ap)]
         rlan_access_points.bandwidth = param.bandwidth*np.ones(num_ap)

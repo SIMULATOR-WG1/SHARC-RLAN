@@ -10,9 +10,11 @@ import matplotlib.pyplot as plt
 import sys
 import os
 
+from sharc.support.enumerations import StationType
 from sharc.antenna.antenna_element_rlan_m2101 import AntennaElementRlanM2101
 from sharc.antenna.antenna_element_rlan_f1336 import AntennaElementRlanF1336
 from sharc.antenna.antenna_element_rlan_const import AntennaElementRlanConst
+from sharc.antenna.antenna_laa_r5a976 import AntennaElementLaar5a
 from sharc.antenna.antenna import Antenna
 from sharc.support.named_tuples import AntennaPar
 from sharc.parameters.parameters_antenna_rlan import ParametersAntennaRlan
@@ -42,7 +44,7 @@ class AntennaBeamformingRlan(Antenna):
             correction factor array
     """
 
-    def __init__(self, par: AntennaPar, azimuth: float, elevation: float):
+    def __init__(self, par: AntennaPar, azimuth: float, elevation: float, s_type):
         """
         Constructs an AntennaBeamformingRlan object.
         Does not receive angles in local coordinate system.
@@ -60,8 +62,10 @@ class AntennaBeamformingRlan(Antenna):
 
         if (par.element_pattern).upper() == "M2101":
             self.element = AntennaElementRlanM2101(par)
-        elif (par.element_pattern).upper() == "F1336":
+        elif (par.element_pattern).upper() == "F1336" and s_type == "WIFI":
             self.element = AntennaElementRlanF1336(par)
+        elif (par.element_pattern).upper() == "F1336" and s_type == "LAA":
+            self.element = AntennaElementLaar5a(par)
         elif (par.element_pattern).upper() == "FIXED":
             self.element = AntennaElementRlanConst(par)
         else:
@@ -304,8 +308,8 @@ class PlotAntennaPattern(object):
 
     def plot_element_pattern(self,antenna: AntennaBeamformingRlan, sta_type: str, antenna_type: str, plot_type: str):
 
-        phi_escan = 45
-        theta_tilt = 30
+        phi_escan = -100
+        theta_tilt = 10
 
         # Plot horizontal pattern
         phi = np.linspace(-180, 180, num = 360)
@@ -397,8 +401,8 @@ if __name__ == '__main__':
     param.ap_tx_element_theta_deg_3db = 90
     param.ap_tx_element_am       = 25
     param.ap_tx_element_sla_v    = 25
-    param.ap_tx_n_rows           = 64
-    param.ap_tx_n_columns        = 64
+    param.ap_tx_n_rows           = 1
+    param.ap_tx_n_columns        = 4
     param.ap_tx_element_horiz_spacing = 0.5
     param.ap_tx_element_vert_spacing = 0.5
     param.ap_downtilt_deg = 0
