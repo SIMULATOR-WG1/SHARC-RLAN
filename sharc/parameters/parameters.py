@@ -493,7 +493,7 @@ class Parameters(object):
         self.amax_bs.tx_power_density = config.getfloat("AMAX_BS", "tx_power_density")
         self.amax_bs.noise_temperature = config.getfloat("AMAX_BS", "noise_temperature")
         self.amax_bs.inr_scaling = config.getfloat("AMAX_BS", "inr_scaling")
-        self.amax_bs.antenna_gain = config.getfloat("AMAX_BS", "antenna_gain")
+        self.amax_bs.element_max_g = config.getfloat("AMAX_BS", "antenna_gain")
         self.amax_bs.antenna_pattern = config.get("AMAX_BS", "antenna_pattern")
         self.amax_bs.antenna_envelope_gain = config.getfloat("AMAX_BS", "antenna_envelope_gain")
         self.amax_bs.diameter = config.getfloat("AMAX_BS", "diameter")
