@@ -275,6 +275,9 @@ class Simulation(ABC, Observable):
             self.system_rlan_antenna_gain = gain_a
             self.rlan_system_antenna_gain = gain_b
             self.rlan_system_path_loss = path_loss
+            
+
+                
 
         # RLAN AP <-> RLAN UE
         else:
@@ -464,9 +467,16 @@ class Simulation(ABC, Observable):
 
             off_axis_angle = station_1.get_off_axis_angle(station_2)
             distance = station_1.get_distance_to(station_2)
-            theta = np.degrees(np.arctan((station_1.height - station_2.height)/distance)) + station_1.elevation
-            gains[0,station_2_active] = station_1.antenna[0].calculate_gain(off_axis_angle_vec=off_axis_angle[0,station_2_active],
+            theta = np.degrees(np.arctan((station_1.height - station_2.height)/distance)) + station_1.elevation          
+            if station_1.station_type is StationType.AMAX_BS or \
+               station_1.station_type is StationType.AMAX_CPE:
+                   for k in station_1_active:
+                       gains[k,station_2_active] = station_1.antenna[k].calculate_gain(phi_vec=phi[k,station_2_active],
+                                                                            theta_vec=theta[k,station_2_active])
+            else:
+                gains[0,station_2_active] = station_1.antenna[0].calculate_gain(off_axis_angle_vec=off_axis_angle[0,station_2_active],
                                                                             theta_vec=theta[0,station_2_active])
+                 
         else: # for RLAN (AP) <-> RLAN(ue)
             for k in station_1_active:
                 gains[k,station_2_active] = station_1.antenna[k].calculate_gain(phi_vec=phi[k,station_2_active],
