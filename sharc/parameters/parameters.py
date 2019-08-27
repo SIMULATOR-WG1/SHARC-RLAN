@@ -548,7 +548,7 @@ class Parameters(object):
         self.amax_cpe.tx_power_density = config.getfloat("AMAX_CPE", "tx_power_density")
         self.amax_cpe.noise_temperature = config.getfloat("AMAX_CPE", "noise_temperature")
         self.amax_cpe.inr_scaling = config.getfloat("AMAX_CPE", "inr_scaling")
-        self.amax_cpe.antenna_gain = config.getfloat("AMAX_CPE", "antenna_gain")
+        self.amax_cpe.element_max_g = config.getfloat("AMAX_CPE", "antenna_gain")
         self.amax_cpe.antenna_pattern = config.get("AMAX_CPE", "antenna_pattern")
         self.amax_cpe.antenna_envelope_gain = config.getfloat("AMAX_CPE", "antenna_envelope_gain")
         self.amax_cpe.diameter = config.getfloat("AMAX_CPE", "diameter")
