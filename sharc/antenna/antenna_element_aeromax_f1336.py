@@ -107,7 +107,7 @@ class AntennaElementAeromaxF1336(object):
             elif x_v[g] < 4:
                 gain[g] = -12 + 10*np.log10(x_v[g]**-1.5 + self.k_v)
             elif x_v[g] < 90 / self.theta_deg_3db:
-                gain[g] = - self.lambda_k_v - self.incline_factor * np.log10(x_v)
+                gain[g] = - self.lambda_k_v - self.incline_factor * np.log10(x_v[g])
             else:
                 gain[g] = self.g_hr_180
 

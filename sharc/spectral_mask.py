@@ -55,7 +55,7 @@ class SpectralMask(ABC):
             
             # Lower and upper power emission levels
             pwr_lvl_1 = self.mask_dbm[inc_df[0]]
-            pwr_lvl_2 = self.mask_dbm[inc_df[-1] + 1]
+            pwr_lvl_2 = self.mask_dbm[inc_df[-1]]  # [-1]+1
 
             # Upper and lower rectangles
             if pwr_lvl_1 != self.p_tx:
